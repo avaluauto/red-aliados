@@ -1,0 +1,26 @@
+{
+  "name": "red-aliados",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Red Aliados — dealer network module for Avaluauto",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@11.2.2",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm -r --filter=./apps/* --filter=./packages/* build",
+    "typecheck": "pnpm -r --filter=./apps/* --filter=./packages/* typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "pnpm --filter web test:unit",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "test:db": "supabase test db"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.6",
+    "typescript": "5.9.3"
+  }
+}

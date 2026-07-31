@@ -1,0 +1,6 @@
+pgTAP tests land alongside each PR1 migration (schema, app helpers, RLS masking
+matrix, public views) and are run via `pnpm test:db` -> `supabase test db`, which
+requires the Supabase CLI and a running local stack (`supabase start`).
+
+Harness wiring (PR0): root `package.json` exposes the `test:db` script; no pgTAP
+files exist yet because there is no schema to test against.

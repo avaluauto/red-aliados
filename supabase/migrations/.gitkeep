@@ -1,0 +1,2 @@
+Migrations land in PR1 (DB Foundation): 0001_core_schema.sql, 0002_app_helpers.sql,
+0003_rls_policies.sql, 0004_public_views.sql. See design.md.

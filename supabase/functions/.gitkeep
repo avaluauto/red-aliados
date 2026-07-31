@@ -1,0 +1,2 @@
+Edge Functions land in PR4 (vehicle-sync): ingest-vehicle-event/, reconcile-outbox/.
+See design.md.

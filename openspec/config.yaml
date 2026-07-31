@@ -1,0 +1,82 @@
+schema: spec-driven
+
+context: |
+  Project: red-aliados — B2B automotive dealer network module for Avaluauto.
+  Standalone repo/deploy/DB (own Supabase project), later integrated as a V2 module.
+  Monorepo: pnpm workspaces (Turborepo deferred). apps/web: Vite + React 19 + TS strict,
+  TanStack Router/Query, Zustand (UI state only), RHF + Zod, Tailwind, atomic design +
+  screaming architecture (features/*/{domain,data,hooks,components}).
+  Backend: Supabase Postgres + RLS, no worker — sync via Supabase Edge Functions
+  (ingest-vehicle-event webhook, reconcile-outbox pg_cron), idempotent via sync_event_log.
+  Shared types: packages/contracts (supabase gen types + Zod schemas).
+  Identity: Supabase Third-Party Auth, zero local user table, trusts V2-issued JWT via JWKS,
+  tenant_id/red_aliados_enabled/role claims from V2 Custom Access Token Hook.
+
+stack:
+  monorepo: "pnpm workspaces"
+  frontend:
+    app: "apps/web"
+    build_tool: "Vite"
+    framework: "React 19"
+    language: "TypeScript (strict)"
+    routing: "TanStack Router (typed)"
+    server_state: "TanStack Query (over Supabase client)"
+    local_state: "Zustand (UI state only)"
+    forms: "React Hook Form + Zod"
+    styling: "Tailwind CSS"
+    architecture: "atomic design (shared/ui/{atoms,molecules,organisms}) + container/presentational + screaming architecture (features/*/{domain,data,hooks,components})"
+  backend:
+    database: "Supabase Postgres + RLS"
+    sync: "Supabase Edge Functions (supabase/functions/): ingest-vehicle-event (webhook receiver), reconcile-outbox (pg_cron scheduled reconciliation)"
+    idempotency: "sync_event_log table"
+    worker_process: "none — sync is Edge Functions only"
+  shared_types:
+    package: "packages/contracts"
+    source: "supabase gen types typescript + shared Zod schemas"
+  identity:
+    provider: "Supabase Third-Party Auth"
+    local_user_table: false
+    trust_model: "JWT issued by Avaluauto V2's Supabase project, validated via JWKS"
+    claims: "tenant_id, red_aliados_enabled, role — injected by V2's Custom Access Token Hook"
+  testing:
+    unit_component: "Vitest + React Testing Library"
+    e2e: "Playwright (critical flows: connection accept -> see inventory -> reveal contact)"
+  lint_format: "Biome (single tool, replaces ESLint+Prettier)"
+  ci: "GitHub Actions — typecheck + lint + test + build on PR, plus Supabase migration diff check"
+
+testing:
+  strict_tdd: true
+  test_command: "pnpm --filter web test"
+  test_command_watch: "pnpm --filter web test -- --watch"
+  e2e_command: "pnpm --filter web exec playwright test"
+  coverage_command: "pnpm --filter web test -- --coverage"
+  note: "No app code exists yet (pre-scaffold). Commands are the planned pnpm workspace scripts per the decided stack; confirm exact script names once apps/web/package.json is scaffolded in sdd-apply."
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes (especially Edge Functions and RLS policy changes)
+    - Call out cross-repo impact on Avaluauto V2 explicitly (webhook contract, JWT claims contract)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - RLS and auth-claim requirements MUST be stated explicitly per feature
+  design:
+    - Include sequence diagrams for sync flows (ingest-vehicle-event, reconcile-outbox)
+    - Document architecture decisions with rationale
+    - State domain/data/hooks/components boundaries per feature explicitly
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Flag any task touching supabase/functions/, RLS policies, or packages/contracts as high-risk
+  apply:
+    - Follow existing code patterns once scaffolded
+    - Strict TDD: RED-GREEN-REFACTOR for all new logic
+    tdd: true
+    test_command: "pnpm --filter web test"
+  verify:
+    test_command: "pnpm --filter web test"
+    build_command: "pnpm --filter web build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+    - Warn before merging changes to RLS policies or the JWT claims contract without explicit confirmation
