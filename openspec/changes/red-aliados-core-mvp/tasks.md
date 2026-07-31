@@ -9,11 +9,11 @@
 | Chained PRs recommended | Yes |
 | Suggested split | PR0 scaffold -> PR1 DB/RLS -> PR2 identity-bridge -> PR3 network-authorization -> PR4 vehicle-sync -> PR5 tenant-directory -> PR6 network-connections -> PR7 partner-reputation -> PR8 connection-messaging -> PR9 targeted-search -> PR10 e2e/docs |
 | Delivery strategy | ask-on-risk |
-| Chain strategy | pending (user decision required before apply) |
+| Chain strategy | stacked-to-main (confirmed by user before PR0 apply) |
 
-Decision needed before apply: Yes
+Decision needed before apply: No — resolved as stacked-to-main
 Chained PRs recommended: Yes
-Chain strategy: pending
+Chain strategy: stacked-to-main
 400-line budget risk: High
 
 ### Suggested Work Units
@@ -40,11 +40,11 @@ Chain strategy: pending
 
 ## Phase 1: DB Foundation (blocks all features)
 
-- [ ] 1.1 pgTAP + `supabase/migrations/0001_core_schema.sql`: 13 tables + indexes incl. `connection_edges(viewer_tenant_id, visible_tenant_id) where revoked_at is null`
-- [ ] 1.2 pgTAP + `0002_app_helpers.sql`: `app.module_enabled/current_tenant_id/is_connected/has_network_access/visibility_tier`
-- [ ] 1.3 pgTAP masking matrix (owner/connected/candidate/none) + `0003_rls_policies.sql`: deny-by-default + `insert_own_request` CHECK
-- [ ] 1.4 pgTAP + `0004_public_views.sql`: `vehicle_snapshots_public` SECURITY DEFINER view + grants/revokes
-- [ ] 1.5 Generate `packages/contracts/src/db` types from schema
+- [x] 1.1 pgTAP + `supabase/migrations/0001_core_schema.sql`: 13 tables + indexes incl. `connection_edges(viewer_tenant_id, visible_tenant_id) where revoked_at is null`
+- [x] 1.2 pgTAP + `0002_app_helpers.sql`: `app.module_enabled/current_tenant_id/is_connected/has_network_access/visibility_tier`
+- [x] 1.3 pgTAP masking matrix (owner/connected/candidate/none) + `0003_rls_policies.sql`: deny-by-default + `insert_own_request` CHECK
+- [x] 1.4 pgTAP + `0004_public_views.sql`: `vehicle_snapshots_public` SECURITY DEFINER view + grants/revokes
+- [x] 1.5 Generate `packages/contracts/src/db` types from schema (hand-written — see apply-progress deviation)
 
 ## Phase 2: identity-bridge
 
