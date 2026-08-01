@@ -77,11 +77,11 @@ Chain strategy: stacked-to-main
 
 ## Phase 6: network-connections
 
-- [ ] 6.1 Vitest + `features/network-connections/domain`: `suggested->pending->accepted|rejected|expired` state machine + 48h expiry calc
-- [ ] 6.2 `.../data,hooks`: create request (vehicle_interest/search_match), accept/reject mutations
-- [ ] 6.3 pg_cron migration: auto-expire pending requests past 48h
-- [ ] 6.4 `.../components`: request/accept/reject UI
-- [ ] 6.5 Playwright: accept -> reciprocal edges; reject/expiry -> none; seeded `direct` only via service role
+- [x] 6.1 Vitest + `features/network-connections/domain`: `suggested->pending->accepted|rejected|expired` state machine + 48h expiry calc
+- [x] 6.2 `.../data,hooks`: create request (vehicle_interest/search_match), accept/reject mutations
+- [x] 6.3 pg_cron migration: auto-expire pending requests past 48h (`0006_pg_cron_expire_requests.sql`, groups the state-transition/reciprocal-edge trigger + the expiry sweep -- see apply-progress deviation)
+- [x] 6.4 `.../components`: request/accept/reject UI
+- [x] 6.5 Playwright: accept -> reciprocal edges; reject/expiry -> none; seeded `direct` only via service role (direct-insert RLS proof documented as verification gap, same as PR3 -- see apply-progress)
 
 ## Phase 7: partner-reputation
 
