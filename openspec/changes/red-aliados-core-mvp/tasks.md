@@ -91,10 +91,10 @@ Chain strategy: stacked-to-main
 
 ## Phase 8: connection-messaging
 
-- [ ] 8.1 Vitest + `features/connection-messaging/domain`: contact-reveal-on-accept gate
-- [ ] 8.2 `.../data,hooks`: Realtime subscription on `messages`, scoped to request origin
-- [ ] 8.3 `.../components`: thread UI, no attachments/presence/read-receipts
-- [ ] 8.4 Playwright: 3rd tenant cannot read thread; contact hidden pending -> shown on accept
+- [x] 8.1 Vitest + `features/connection-messaging/domain`: contact-reveal-on-accept gate
+- [x] 8.2 `.../data,hooks`: Realtime subscription on `connection_messages`, scoped to request origin (client-side party-check gate before any subscribe/read -- see apply-progress)
+- [x] 8.3 `.../components`: thread UI, no attachments/presence/read-receipts
+- [x] 8.4 Playwright: 3rd tenant cannot read thread (client-side proof only, RLS proof documented as verification gap, same as PR3/PR6 -- see apply-progress); contact hidden pending -> shown on accept
 
 ## Phase 9: targeted-search
 

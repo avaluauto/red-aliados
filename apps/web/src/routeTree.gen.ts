@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as E2eConnectionMessagingRouteImport } from './routes/e2e-connection-messaging'
 import { Route as E2eNetworkConnectionsRouteImport } from './routes/e2e-network-connections'
 import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
 import { Route as E2ePartnerReputationRouteImport } from './routes/e2e-partner-reputation'
@@ -18,6 +19,11 @@ import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-dire
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eConnectionMessagingRoute = E2eConnectionMessagingRouteImport.update({
+  id: '/e2e-connection-messaging',
+  path: '/e2e-connection-messaging',
   getParentRoute: () => rootRouteImport,
 } as any)
 const E2eNetworkConnectionsRoute = E2eNetworkConnectionsRouteImport.update({
@@ -43,6 +49,7 @@ const E2eTenantDirectoryRoute = E2eTenantDirectoryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
     | '/e2e-partner-reputation'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
     | '/e2e-partner-reputation'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
     | '/e2e-partner-reputation'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  E2eConnectionMessagingRoute: typeof E2eConnectionMessagingRoute
   E2eNetworkConnectionsRoute: typeof E2eNetworkConnectionsRoute
   E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
   E2ePartnerReputationRoute: typeof E2ePartnerReputationRoute
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-connection-messaging': {
+      id: '/e2e-connection-messaging'
+      path: '/e2e-connection-messaging'
+      fullPath: '/e2e-connection-messaging'
+      preLoaderRoute: typeof E2eConnectionMessagingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e2e-network-connections': {
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  E2eConnectionMessagingRoute: E2eConnectionMessagingRoute,
   E2eNetworkConnectionsRoute: E2eNetworkConnectionsRoute,
   E2eNetworkGuardRoute: E2eNetworkGuardRoute,
   E2ePartnerReputationRoute: E2ePartnerReputationRoute,
