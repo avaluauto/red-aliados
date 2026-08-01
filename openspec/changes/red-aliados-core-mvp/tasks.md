@@ -56,24 +56,24 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: network-authorization
 
-- [ ] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
-- [ ] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
-- [ ] 3.3 Playwright: unconnected tenant + direct table query both return zero rows
+- [x] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
+- [x] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
+- [x] 3.3 Playwright: unconnected tenant client-side proof done; direct table query RLS proof documented as a verification gap (no live Supabase project -- see apply-progress)
 
 ## Phase 4: vehicle-sync
 
-- [ ] 4.1 `packages/contracts/src/zod`: webhook payload schema
-- [ ] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert
-- [ ] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead@5) + gap scan
-- [ ] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min
-- [ ] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired
+- [x] 4.1 `packages/contracts/src/zod`: webhook payload schema (`vehicleSyncEventSchema`, see PR4 deviation: descriptive-only V2 fields not persisted)
+- [x] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert (real logic in `packages/vehicle-sync`; Deno entrypoint is a thin, unexecuted wrapper — see apply-progress)
+- [x] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead after 6th total attempt — documented interpretation, see apply-progress) + gap scan
+- [x] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min (`0005_pg_cron_reconcile.sql`, pg_cron + pg_net pattern, NOT executed — no pg_cron/pg_net-enabled Postgres in sandbox)
+- [x] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired (packages/vehicle-sync/src/integration.test.ts, run for real)
 
 ## Phase 5: tenant-directory
 
-- [ ] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
-- [ ] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
-- [ ] 5.3 `.../components`: candidate card (reputation shown, phone masked)
-- [ ] 5.4 Playwright: pre-connection masking; zero rows without linking request
+- [x] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
+- [x] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
+- [x] 5.3 `.../components`: candidate card (reputation shown, phone masked)
+- [x] 5.4 Playwright: pre-connection masking; zero rows without linking request
 
 ## Phase 6: network-connections
 
