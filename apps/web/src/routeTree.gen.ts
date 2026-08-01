@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const E2eNetworkGuardRoute = E2eNetworkGuardRouteImport.update({
+  id: '/e2e-network-guard',
+  path: '/e2e-network-guard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/e2e-network-guard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/e2e-network-guard'
+  id: '__root__' | '/' | '/e2e-network-guard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/e2e-network-guard': {
+      id: '/e2e-network-guard'
+      path: '/e2e-network-guard'
+      fullPath: '/e2e-network-guard'
+      preLoaderRoute: typeof E2eNetworkGuardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  E2eNetworkGuardRoute: E2eNetworkGuardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
