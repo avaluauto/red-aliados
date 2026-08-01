@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:e2e": "tsc -b && vite build --mode e2e",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test:unit": "vitest run",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@red-aliados/contracts": "workspace:*",
+    "@supabase/supabase-js": "2.111.0",
     "@tanstack/react-query": "5.101.4",
     "@tanstack/react-router": "1.170.18",
     "react": "19.2.8",

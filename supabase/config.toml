@@ -3,6 +3,11 @@
 #
 # Scaffold only (PR0) — auth/db sections get filled in as PR1 (DB Foundation)
 # and PR2 (identity-bridge / Third-Party Auth JWKS) land.
+#
+# PR2 status: Third-Party Auth (JWKS trust of V2-issued JWTs) is NOT
+# configured here — see supabase/THIRD_PARTY_AUTH.md for exactly what needs
+# to happen and why it isn't in this file yet (no live project to verify the
+# correct [auth.third_party.*] keys against).
 
 project_id = "red-aliados"
 
