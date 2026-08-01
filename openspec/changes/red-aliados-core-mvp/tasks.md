@@ -70,10 +70,10 @@ Chain strategy: stacked-to-main
 
 ## Phase 5: tenant-directory
 
-- [ ] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
-- [ ] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
-- [ ] 5.3 `.../components`: candidate card (reputation shown, phone masked)
-- [ ] 5.4 Playwright: pre-connection masking; zero rows without linking request
+- [x] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
+- [x] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
+- [x] 5.3 `.../components`: candidate card (reputation shown, phone masked)
+- [x] 5.4 Playwright: pre-connection masking; zero rows without linking request
 
 ## Phase 6: network-connections
 

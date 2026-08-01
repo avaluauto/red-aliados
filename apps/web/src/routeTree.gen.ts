@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
+import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-directory'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const E2eNetworkGuardRoute = E2eNetworkGuardRouteImport.update({
   path: '/e2e-network-guard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const E2eTenantDirectoryRoute = E2eTenantDirectoryRouteImport.update({
+  id: '/e2e-tenant-directory',
+  path: '/e2e-tenant-directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/e2e-network-guard'
+  fullPaths: '/' | '/e2e-network-guard' | '/e2e-tenant-directory'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/e2e-network-guard'
-  id: '__root__' | '/' | '/e2e-network-guard'
+  to: '/' | '/e2e-network-guard' | '/e2e-tenant-directory'
+  id: '__root__' | '/' | '/e2e-network-guard' | '/e2e-tenant-directory'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
+  E2eTenantDirectoryRoute: typeof E2eTenantDirectoryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof E2eNetworkGuardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/e2e-tenant-directory': {
+      id: '/e2e-tenant-directory'
+      path: '/e2e-tenant-directory'
+      fullPath: '/e2e-tenant-directory'
+      preLoaderRoute: typeof E2eTenantDirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   E2eNetworkGuardRoute: E2eNetworkGuardRoute,
+  E2eTenantDirectoryRoute: E2eTenantDirectoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
