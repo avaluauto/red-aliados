@@ -56,9 +56,9 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: network-authorization
 
-- [ ] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
-- [ ] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
-- [ ] 3.3 Playwright: unconnected tenant + direct table query both return zero rows
+- [x] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
+- [x] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
+- [x] 3.3 Playwright: unconnected tenant client-side proof done; direct table query RLS proof documented as a verification gap (no live Supabase project -- see apply-progress)
 
 ## Phase 4: vehicle-sync
 
