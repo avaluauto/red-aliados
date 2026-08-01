@@ -6,6 +6,7 @@
 // allowed to talk to Supabase, per design.md's hexagonal-lite split.
 import { supabaseClient } from "@/features/identity-bridge";
 import type { VisibilityTier } from "@/features/network-authorization";
+import { computeReputationScore, type ReputationEventInput } from "@/features/partner-reputation";
 
 export interface TenantDirectoryEntry {
   readonly tenantId: string;
@@ -110,7 +111,7 @@ export async function fetchHasCandidateLink(targetTenantId: string): Promise<boo
 }
 
 // =============================================================================
-// Reputation -- raw event-count summary, NOT the computed score
+// Reputation -- raw event counts + the Phase 7 computed score, additively
 // =============================================================================
 
 export interface ReputationSummary {
@@ -118,6 +119,16 @@ export interface ReputationSummary {
   readonly rejectedCount: number;
   readonly expiredCount: number;
   readonly totalCount: number;
+  /**
+   * Phase 7's weighted score (features/partner-reputation/domain:
+   * computeReputationScore) -- `null` for a tenant with zero terminal events
+   * yet ("unrated"), never a misleading 0. Added ADDITIVELY alongside the
+   * pre-existing raw counts below (PR5's own forward-compat note on this
+   * function: "can replace this function's body without changing its
+   * callers' shape") -- every existing caller destructuring
+   * acceptedCount/rejectedCount/expiredCount/totalCount is unaffected.
+   */
+  readonly score: number | null;
 }
 
 const EMPTY_SUMMARY: ReputationSummary = {
@@ -125,18 +136,17 @@ const EMPTY_SUMMARY: ReputationSummary = {
   rejectedCount: 0,
   expiredCount: 0,
   totalCount: 0,
+  score: null,
 };
 
 /**
- * DEVIATION / SCOPE BOUNDARY (documented, not silently resolved): this is a
- * RAW COUNT summary of `reputation_events` rows, not the weighted "computed
- * reputation score" partner-reputation.md describes (response-time
- * weighting, expiry-penalizes-more-than-rejection). That scoring algorithm
- * is Phase 7's domain to build (see tasks.md 7.1). Task 5.3 only needs a
- * visibility-gated slot on the candidate card to show *something*
- * reputation-shaped pre-connection; this function supplies that without
- * pre-empting Phase 7's real computation, which can replace this function's
- * body without changing its callers' shape.
+ * Reads `reputation_events` for `targetTenantId` and returns both the raw
+ * per-outcome counts (pre-existing shape) and the Phase 7 weighted score
+ * (features/partner-reputation/domain: computeReputationScore -- expiry
+ * penalizes more than an explicit rejection, per partner-reputation spec).
+ * One query, two derived views of the same rows -- no second round trip and
+ * no duplicated Supabase call against features/partner-reputation's own data
+ * layer, which is reserved for that feature's own hooks/components.
  *
  * Query itself is real and RLS-gated for real: reputation_events'
  * select_reputation_events policy (0003) already permits reads for the
@@ -148,7 +158,7 @@ export async function fetchReputationSummary(
 ): Promise<ReputationSummary | null> {
   const { data, error } = await supabaseClient
     .from("reputation_events")
-    .select("event_type")
+    .select("event_type, response_time_seconds")
     .eq("tenant_id", targetTenantId);
 
   if (error || !data) {
@@ -156,8 +166,13 @@ export async function fetchReputationSummary(
   }
 
   const summary = { ...EMPTY_SUMMARY };
+  const scoreInputs: ReputationEventInput[] = [];
   for (const row of data) {
     summary.totalCount += 1;
+    scoreInputs.push({
+      eventType: row.event_type as ReputationEventInput["eventType"],
+      responseTimeSeconds: row.response_time_seconds as number,
+    });
     if (row.event_type === "accepted") {
       summary.acceptedCount += 1;
     } else if (row.event_type === "rejected") {
@@ -166,5 +181,5 @@ export async function fetchReputationSummary(
       summary.expiredCount += 1;
     }
   }
-  return summary;
+  return { ...summary, score: computeReputationScore(scoreInputs).score };
 }

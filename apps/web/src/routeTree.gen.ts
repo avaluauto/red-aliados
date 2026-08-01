@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as E2eNetworkConnectionsRouteImport } from './routes/e2e-network-connections'
 import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
+import { Route as E2ePartnerReputationRouteImport } from './routes/e2e-partner-reputation'
 import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-directory'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const E2eNetworkGuardRoute = E2eNetworkGuardRouteImport.update({
   path: '/e2e-network-guard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const E2ePartnerReputationRoute = E2ePartnerReputationRouteImport.update({
+  id: '/e2e-partner-reputation',
+  path: '/e2e-partner-reputation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const E2eTenantDirectoryRoute = E2eTenantDirectoryRouteImport.update({
   id: '/e2e-tenant-directory',
   path: '/e2e-tenant-directory',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRoutesById {
@@ -52,6 +60,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
 }
 export interface FileRouteTypes {
@@ -60,18 +69,21 @@ export interface FileRouteTypes {
     | '/'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
     | '/e2e-tenant-directory'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
     | '/e2e-tenant-directory'
   id:
     | '__root__'
     | '/'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
     | '/e2e-tenant-directory'
   fileRoutesById: FileRoutesById
 }
@@ -79,6 +91,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   E2eNetworkConnectionsRoute: typeof E2eNetworkConnectionsRoute
   E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
+  E2ePartnerReputationRoute: typeof E2ePartnerReputationRoute
   E2eTenantDirectoryRoute: typeof E2eTenantDirectoryRoute
 }
 
@@ -105,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof E2eNetworkGuardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/e2e-partner-reputation': {
+      id: '/e2e-partner-reputation'
+      path: '/e2e-partner-reputation'
+      fullPath: '/e2e-partner-reputation'
+      preLoaderRoute: typeof E2ePartnerReputationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/e2e-tenant-directory': {
       id: '/e2e-tenant-directory'
       path: '/e2e-tenant-directory'
@@ -119,6 +139,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   E2eNetworkConnectionsRoute: E2eNetworkConnectionsRoute,
   E2eNetworkGuardRoute: E2eNetworkGuardRoute,
+  E2ePartnerReputationRoute: E2ePartnerReputationRoute,
   E2eTenantDirectoryRoute: E2eTenantDirectoryRoute,
 }
 export const routeTree = rootRouteImport

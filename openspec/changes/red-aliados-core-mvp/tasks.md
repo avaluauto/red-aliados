@@ -85,9 +85,9 @@ Chain strategy: stacked-to-main
 
 ## Phase 7: partner-reputation
 
-- [ ] 7.1 Vitest + `features/partner-reputation/domain`: score computation, expiry-penalizes-more-than-rejection
-- [ ] 7.2 DB trigger: emit `reputation_events` on terminal state (skip `suggested`)
-- [ ] 7.3 Playwright: expired vs rejected scores diverge as specified
+- [x] 7.1 Vitest + `features/partner-reputation/domain`: score computation, expiry-penalizes-more-than-rejection
+- [x] 7.2 DB trigger: emit `reputation_events` on terminal state (skip `suggested`)
+- [x] 7.3 Playwright: expired vs rejected scores diverge as specified
 
 ## Phase 8: connection-messaging
 

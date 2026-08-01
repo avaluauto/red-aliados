@@ -30,7 +30,13 @@ function TenantDirectoryHarnessRoute() {
   return <TenantDirectoryHarness />;
 }
 
-const FIXTURE_REPUTATION = { acceptedCount: 3, rejectedCount: 1, expiredCount: 0, totalCount: 4 };
+const FIXTURE_REPUTATION = {
+  acceptedCount: 3,
+  rejectedCount: 1,
+  expiredCount: 0,
+  totalCount: 4,
+  score: 87,
+};
 
 function TenantDirectoryHarness() {
   const params = new URLSearchParams(window.location.search);

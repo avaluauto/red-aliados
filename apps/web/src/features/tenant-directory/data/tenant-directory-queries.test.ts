@@ -178,10 +178,10 @@ describe("fetchReputationSummary", () => {
     from.mockReturnValue(
       makeBuilder({
         data: [
-          { event_type: "accepted" },
-          { event_type: "accepted" },
-          { event_type: "rejected" },
-          { event_type: "expired" },
+          { event_type: "accepted", response_time_seconds: 0 },
+          { event_type: "accepted", response_time_seconds: 0 },
+          { event_type: "rejected", response_time_seconds: 0 },
+          { event_type: "expired", response_time_seconds: 172_800 },
         ],
         error: null,
       }),
@@ -196,10 +196,11 @@ describe("fetchReputationSummary", () => {
       rejectedCount: 1,
       expiredCount: 1,
       totalCount: 4,
+      score: 65, // (100 + 100 + 60 + 0) / 4 -- see partner-reputation/domain's own tests for the per-event formula
     });
   });
 
-  it("returns a zeroed summary when there are no events yet", async () => {
+  it("returns a zeroed summary (score null, unrated) when there are no events yet", async () => {
     from.mockReturnValue(makeBuilder({ data: [], error: null }));
 
     const { fetchReputationSummary } = await import("./tenant-directory-queries");
@@ -210,7 +211,31 @@ describe("fetchReputationSummary", () => {
       rejectedCount: 0,
       expiredCount: 0,
       totalCount: 0,
+      score: null,
     });
+  });
+
+  it("REQUIREMENT (partner-reputation: Score Computation and Expiry Penalty) -- an otherwise-identical expired outcome scores lower than a rejected one", async () => {
+    from.mockReturnValue(
+      makeBuilder({
+        data: [{ event_type: "expired", response_time_seconds: 172_800 }],
+        error: null,
+      }),
+    );
+    const { fetchReputationSummary } = await import("./tenant-directory-queries");
+    const expiredSummary = await fetchReputationSummary(TARGET_TENANT);
+
+    from.mockReturnValue(
+      makeBuilder({
+        data: [{ event_type: "rejected", response_time_seconds: 172_800 }],
+        error: null,
+      }),
+    );
+    const rejectedSummary = await fetchReputationSummary(TARGET_TENANT);
+
+    expect(expiredSummary?.score).not.toBeNull();
+    expect(rejectedSummary?.score).not.toBeNull();
+    expect(expiredSummary?.score as number).toBeLessThan(rejectedSummary?.score as number);
   });
 
   it("returns null on a query error rather than throwing", async () => {
