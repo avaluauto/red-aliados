@@ -48,11 +48,11 @@ Chain strategy: stacked-to-main
 
 ## Phase 2: identity-bridge
 
-- [ ] 2.1 Configure Supabase Third-Party Auth (JWKS) against V2 project
-- [ ] 2.2 Vitest + `features/identity-bridge/domain`: claim contract validation
-- [ ] 2.3 `.../data,hooks`: session bootstrap from JWT, no local user writes
-- [ ] 2.4 `.../components`: module-disabled state (no registration form)
-- [ ] 2.5 Playwright: valid JWT signs in silently; disabled tenant sees gate, zero queries
+- [x] 2.1 Configure Supabase Third-Party Auth (JWKS) against V2 project (documented, not executed -- see `supabase/THIRD_PARTY_AUTH.md`, no live project exists)
+- [x] 2.2 Vitest + `features/identity-bridge/domain`: claim contract validation
+- [x] 2.3 `.../data,hooks`: session bootstrap from JWT, no local user writes
+- [x] 2.4 `.../components`: module-disabled state (no registration form)
+- [x] 2.5 Playwright: valid JWT signs in silently; disabled tenant sees gate, zero queries
 
 ## Phase 3: network-authorization
 

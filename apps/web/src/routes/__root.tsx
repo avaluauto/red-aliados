@@ -1,4 +1,5 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { IdentityGate } from "@/features/identity-bridge";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -7,7 +8,9 @@ export const Route = createRootRoute({
 function RootLayout() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <Outlet />
+      <IdentityGate>
+        <Outlet />
+      </IdentityGate>
     </div>
   );
 }
