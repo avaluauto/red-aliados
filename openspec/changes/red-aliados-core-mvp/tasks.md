@@ -62,11 +62,11 @@ Chain strategy: stacked-to-main
 
 ## Phase 4: vehicle-sync
 
-- [ ] 4.1 `packages/contracts/src/zod`: webhook payload schema
-- [ ] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert
-- [ ] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead@5) + gap scan
-- [ ] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min
-- [ ] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired
+- [x] 4.1 `packages/contracts/src/zod`: webhook payload schema (`vehicleSyncEventSchema`, see PR4 deviation: descriptive-only V2 fields not persisted)
+- [x] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert (real logic in `packages/vehicle-sync`; Deno entrypoint is a thin, unexecuted wrapper — see apply-progress)
+- [x] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead after 6th total attempt — documented interpretation, see apply-progress) + gap scan
+- [x] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min (`0005_pg_cron_reconcile.sql`, pg_cron + pg_net pattern, NOT executed — no pg_cron/pg_net-enabled Postgres in sandbox)
+- [x] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired (packages/vehicle-sync/src/integration.test.ts, run for real)
 
 ## Phase 5: tenant-directory
 
