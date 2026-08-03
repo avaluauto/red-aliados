@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithRouter } from "../../../test/render-with-router";
 import type { SessionClaims } from "../domain/session-claims";
 import { IdentityGate } from "./IdentityGate";
 
@@ -53,19 +54,23 @@ describe("IdentityGate", () => {
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
   });
 
-  it("renders the session-unavailable state when unauthenticated, and hides children", () => {
+  it("renders the session-unavailable state when unauthenticated, and hides children", async () => {
     useSessionClaims.mockReturnValue({
       isPending: false,
       data: { status: "unauthenticated" },
     });
 
-    render(
+    // SessionUnavailableState now renders a <Link to="/login"> (see
+    // PublicLandingShell.tsx), which needs a real router context -- plain
+    // `render` isn't enough here, unlike the other IdentityGate branches.
+    await renderWithRouter(
       <IdentityGate>
         <div>Protected content</div>
       </IdentityGate>,
     );
 
-    expect(screen.getByRole("status")).toHaveTextContent(/no active/i);
+    expect(screen.getAllByRole("link", { name: /iniciar sesión/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/sesión activa/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
   });
 

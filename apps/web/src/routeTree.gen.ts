@@ -16,6 +16,7 @@ import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
 import { Route as E2ePartnerReputationRouteImport } from './routes/e2e-partner-reputation'
 import { Route as E2eTargetedSearchRouteImport } from './routes/e2e-targeted-search'
 import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-directory'
+import { Route as LoginRouteImport } from './routes/login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const E2eTenantDirectoryRoute = E2eTenantDirectoryRouteImport.update({
   path: '/e2e-tenant-directory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-targeted-search': typeof E2eTargetedSearchRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-targeted-search': typeof E2eTargetedSearchRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
   '/e2e-targeted-search': typeof E2eTargetedSearchRoute
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/e2e-partner-reputation'
     | '/e2e-targeted-search'
     | '/e2e-tenant-directory'
+    | '/login'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/e2e-partner-reputation'
     | '/e2e-targeted-search'
     | '/e2e-tenant-directory'
+    | '/login'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/e2e-partner-reputation'
     | '/e2e-targeted-search'
     | '/e2e-tenant-directory'
+    | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   E2ePartnerReputationRoute: typeof E2ePartnerReputationRoute
   E2eTargetedSearchRoute: typeof E2eTargetedSearchRoute
   E2eTenantDirectoryRoute: typeof E2eTenantDirectoryRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof E2eTenantDirectoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   E2ePartnerReputationRoute: E2ePartnerReputationRoute,
   E2eTargetedSearchRoute: E2eTargetedSearchRoute,
   E2eTenantDirectoryRoute: E2eTenantDirectoryRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
