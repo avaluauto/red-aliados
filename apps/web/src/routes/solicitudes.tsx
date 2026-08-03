@@ -1,6 +1,6 @@
 import type { Json } from "@red-aliados/contracts/db";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { supabaseClient, useSessionClaims } from "@/features/identity-bridge";
 import {
@@ -12,6 +12,7 @@ import {
   useProceedOnMatch,
   useSearchMatches,
 } from "@/features/targeted-search";
+import { Topbar } from "@/shared/ui/Topbar";
 
 // "Conseguir" -- register a sourcing request, search own inventory first,
 // then optionally fan out to connected tenants. This route is the first
@@ -101,45 +102,6 @@ function useCurrentUserId() {
       return data.user.id;
     },
   });
-}
-
-async function handleSignOut() {
-  await supabaseClient.auth.signOut();
-}
-
-function Topbar() {
-  return (
-    <header className="border-b border-border bg-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-        <div className="flex items-center gap-2.5">
-          <span
-            aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-head text-sm font-bold text-white"
-          >
-            A
-          </span>
-          <span className="font-head text-lg font-bold text-dark">Avaluauto</span>
-          <span className="text-sm font-medium text-muted">Red Aliados</span>
-        </div>
-        <nav className="flex items-center gap-4">
-          <Link
-            to="/"
-            className="text-sm font-semibold text-dark transition-colors hover:text-primary"
-          >
-            Mi inventario
-          </Link>
-          <button
-            type="button"
-            data-testid="sign-out-button"
-            onClick={handleSignOut}
-            className="rounded-full border border-border-2 bg-white px-5 py-2.5 text-sm font-semibold text-dark shadow-sm transition-colors hover:border-primary hover:text-primary"
-          >
-            Cerrar sesión
-          </button>
-        </nav>
-      </div>
-    </header>
-  );
 }
 
 function CriteriaSummary({ criteria }: { readonly criteria: Json }) {

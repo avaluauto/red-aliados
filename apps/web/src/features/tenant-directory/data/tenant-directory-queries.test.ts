@@ -18,6 +18,7 @@ function makeBuilder(result: { data: unknown; error: unknown }) {
     in: vi.fn(() => builder),
     is: vi.fn(() => builder),
     or: vi.fn(() => builder),
+    limit: vi.fn(() => promise),
     maybeSingle: vi.fn(() => promise),
     // biome-ignore lint/suspicious/noThenProperty: intentional thenable test double, mirrors Supabase's real awaitable PostgrestFilterBuilder
     then: promise.then.bind(promise),
@@ -36,12 +37,14 @@ describe("fetchTenantDirectoryEntry", () => {
 
   it("queries vehicle_snapshots_public (never the base tables) and maps the masked row", async () => {
     const builder = makeBuilder({
-      data: {
-        tenant_id: TARGET_TENANT,
-        tenant_name: "Acme Motors",
-        contact_phone: "+52 55 1234 5678",
-        visibility_tier: "connected",
-      },
+      data: [
+        {
+          tenant_id: TARGET_TENANT,
+          tenant_name: "Acme Motors",
+          contact_phone: "+52 55 1234 5678",
+          visibility_tier: "connected",
+        },
+      ],
       error: null,
     });
     from.mockReturnValue(builder);
@@ -51,6 +54,39 @@ describe("fetchTenantDirectoryEntry", () => {
 
     expect(from).toHaveBeenCalledWith("vehicle_snapshots_public");
     expect(builder.eq).toHaveBeenCalledWith("tenant_id", TARGET_TENANT);
+    expect(builder.limit).toHaveBeenCalledWith(1);
+    expect(entry).toEqual({
+      tenantId: TARGET_TENANT,
+      tenantName: "Acme Motors",
+      contactPhone: "+52 55 1234 5678",
+      tier: "connected",
+    });
+  });
+
+  it("takes the first row when the tenant has more than one vehicle (view is grained per vehicle, not per tenant)", async () => {
+    from.mockReturnValue(
+      makeBuilder({
+        data: [
+          {
+            tenant_id: TARGET_TENANT,
+            tenant_name: "Acme Motors",
+            contact_phone: "+52 55 1234 5678",
+            visibility_tier: "connected",
+          },
+          {
+            tenant_id: TARGET_TENANT,
+            tenant_name: "Acme Motors",
+            contact_phone: "+52 55 1234 5678",
+            visibility_tier: "connected",
+          },
+        ],
+        error: null,
+      }),
+    );
+
+    const { fetchTenantDirectoryEntry } = await import("./tenant-directory-queries");
+    const entry = await fetchTenantDirectoryEntry(TARGET_TENANT);
+
     expect(entry).toEqual({
       tenantId: TARGET_TENANT,
       tenantName: "Acme Motors",
@@ -62,12 +98,14 @@ describe("fetchTenantDirectoryEntry", () => {
   it("returns masked null fields as-is for a candidate-tier row", async () => {
     from.mockReturnValue(
       makeBuilder({
-        data: {
-          tenant_id: TARGET_TENANT,
-          tenant_name: null,
-          contact_phone: null,
-          visibility_tier: "candidate",
-        },
+        data: [
+          {
+            tenant_id: TARGET_TENANT,
+            tenant_name: null,
+            contact_phone: null,
+            visibility_tier: "candidate",
+          },
+        ],
         error: null,
       }),
     );
@@ -84,7 +122,7 @@ describe("fetchTenantDirectoryEntry", () => {
   });
 
   it("returns null when no row is visible (tier 'none' -- RLS/view filters it out entirely)", async () => {
-    from.mockReturnValue(makeBuilder({ data: null, error: null }));
+    from.mockReturnValue(makeBuilder({ data: [], error: null }));
 
     const { fetchTenantDirectoryEntry } = await import("./tenant-directory-queries");
     const entry = await fetchTenantDirectoryEntry(TARGET_TENANT);

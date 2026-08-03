@@ -12,12 +12,15 @@ export type {
   ConnectionEdgeRow,
   ConnectionRequestRow,
   CreateConnectionRequestInput,
+  MyConnectionEdge,
 } from "./data/connection-requests-queries";
 export {
   acceptConnectionRequest,
   actOnSuggestedRequest,
   createConnectionRequest,
   fetchConnectionEdgesForRequest,
+  fetchMyConnectionEdges,
+  fetchMyPendingConnectionRequests,
   rejectConnectionRequest,
 } from "./data/connection-requests-queries";
 export type {
@@ -41,6 +44,8 @@ export {
 } from "./domain/connection-lifecycle";
 export { useConnectionEdgesForRequest } from "./hooks/useConnectionEdgesForRequest";
 export { useCreateConnectionRequest } from "./hooks/useCreateConnectionRequest";
+export { useMyConnectionEdges } from "./hooks/useMyConnectionEdges";
+export { useMyPendingConnectionRequests } from "./hooks/useMyPendingConnectionRequests";
 export type { RespondToConnectionRequestInput } from "./hooks/useRespondToConnectionRequest";
 export {
   useAcceptConnectionRequest,

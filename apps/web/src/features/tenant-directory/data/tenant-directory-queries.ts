@@ -24,6 +24,15 @@ export interface TenantDirectoryEntry {
  * `contact_phone` below the `connected` tier, so a `candidate`-tier row
  * comes back with both fields already null -- this function does not
  * re-derive that masking, only maps the row shape.
+ *
+ * The view is grained per VEHICLE, not per tenant -- a tenant with more
+ * than one vehicle produces more than one row with identical
+ * tenant_name/contact_phone/visibility_tier. `.limit(1)` (not
+ * `.maybeSingle()`, which errors on >1 row and was silently swallowed here
+ * to `null`, masking every multi-vehicle tenant's name/contact behind the
+ * generic fallback) takes any one of them -- confirmed for real while
+ * testing the accept-connection flow end-to-end against a two-vehicle test
+ * tenant.
  */
 export async function fetchTenantDirectoryEntry(
   targetTenantId: string,
@@ -32,17 +41,18 @@ export async function fetchTenantDirectoryEntry(
     .from("vehicle_snapshots_public")
     .select("tenant_id, tenant_name, contact_phone, visibility_tier")
     .eq("tenant_id", targetTenantId)
-    .maybeSingle();
+    .limit(1);
 
-  if (error || !data) {
+  const row = data?.[0];
+  if (error || !row) {
     return null;
   }
 
   return {
-    tenantId: data.tenant_id,
-    tenantName: data.tenant_name,
-    contactPhone: data.contact_phone,
-    tier: data.visibility_tier,
+    tenantId: row.tenant_id,
+    tenantName: row.tenant_name,
+    contactPhone: row.contact_phone,
+    tier: row.visibility_tier,
   };
 }
 

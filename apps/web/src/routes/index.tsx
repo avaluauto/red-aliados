@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { supabaseClient } from "@/features/identity-bridge";
 import type { OwnTenantVehicle } from "@/features/vehicle-sync";
 import { useOwnTenantVehicles } from "@/features/vehicle-sync";
+import { Topbar } from "@/shared/ui/Topbar";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -15,40 +15,6 @@ const CURRENCY_FORMATTER = new Intl.NumberFormat("es-CO", {
 
 function formatPrice(value: number | null): string {
   return value === null ? "Sin definir" : CURRENCY_FORMATTER.format(value);
-}
-
-async function handleSignOut() {
-  await supabaseClient.auth.signOut();
-  // IdentityGate re-derives session state via onAuthStateChange (already
-  // wired in identity-bridge), so no manual navigation is needed here -- it
-  // swaps back to the public landing page on its own once the session clears.
-}
-
-function Topbar() {
-  return (
-    <header className="border-b border-border bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-        <div className="flex items-center gap-2.5">
-          <span
-            aria-hidden="true"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-head text-sm font-bold text-white"
-          >
-            A
-          </span>
-          <span className="font-head text-lg font-bold text-dark">Avaluauto</span>
-          <span className="text-sm font-medium text-muted">Red Aliados</span>
-        </div>
-        <button
-          type="button"
-          data-testid="sign-out-button"
-          onClick={handleSignOut}
-          className="rounded-full border border-border-2 bg-white px-5 py-2.5 text-sm font-semibold text-dark shadow-sm transition-colors hover:border-primary hover:text-primary"
-        >
-          Cerrar sesión
-        </button>
-      </div>
-    </header>
-  );
 }
 
 function VehicleCard({ vehicle }: { readonly vehicle: OwnTenantVehicle }) {

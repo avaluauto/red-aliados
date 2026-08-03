@@ -142,3 +142,59 @@ export async function fetchConnectionEdgesForRequest(
   }
   return data;
 }
+
+/** A single row of the caller's own active connection_edges, for routes/red.tsx's "Mis conexiones" list. */
+export interface MyConnectionEdge {
+  readonly id: string;
+  readonly visibleTenantId: string;
+  readonly connectionRequestId: string;
+}
+
+/**
+ * Reads every non-revoked `connection_edges` row for the caller's own
+ * tenant (routes/red.tsx: "Mis conexiones"). RLS's `select_own_connection_edges`
+ * policy (0003_rls_policies.sql) already scopes this to
+ * `viewer_tenant_id = app.current_tenant_id()` -- no explicit `.eq` on
+ * viewer needed here, the policy does it. Read path: swallows errors to an
+ * empty array, same convention as every other fetch* in this file.
+ */
+export async function fetchMyConnectionEdges(): Promise<MyConnectionEdge[]> {
+  const { data, error } = await supabaseClient
+    .from("connection_edges")
+    .select("id, visible_tenant_id, connection_request_id")
+    .is("revoked_at", null);
+
+  if (error || !data) {
+    return [];
+  }
+  return data.map((row) => ({
+    id: row.id,
+    visibleTenantId: row.visible_tenant_id,
+    connectionRequestId: row.connection_request_id,
+  }));
+}
+
+/**
+ * Reads every `suggested`/`pending` connection_requests row visible to the
+ * caller's own tenant -- RLS's `select_own_connection_requests` policy
+ * (0003_rls_policies.sql) already scopes this to rows where the caller's
+ * tenant is requester OR recipient, in either direction. Deliberately takes
+ * no tenantId param and does not `.eq` on either party here: routes/red.tsx
+ * only wants the INBOUND half (recipient_tenant_id === caller's tenant), and
+ * that filter belongs in the hook layer (useMyPendingConnectionRequests),
+ * which already knows the caller's tenantId from useSessionClaims -- this
+ * function stays a plain, reusable "every candidate/pending row I can see"
+ * read, same convention as every other fetch* in this file (swallows errors
+ * to an empty array).
+ */
+export async function fetchMyPendingConnectionRequests(): Promise<ConnectionRequestRow[]> {
+  const { data, error } = await supabaseClient
+    .from("connection_requests")
+    .select()
+    .in("status", ["suggested", "pending"]);
+
+  if (error || !data) {
+    return [];
+  }
+  return data;
+}

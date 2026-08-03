@@ -18,6 +18,8 @@ function makeBuilder(result: { data: unknown; error: unknown }) {
     insert: vi.fn(() => builder),
     update: vi.fn(() => builder),
     eq: vi.fn(() => builder),
+    in: vi.fn(() => builder),
+    is: vi.fn(() => builder),
     single: vi.fn(() => promise),
     // biome-ignore lint/suspicious/noThenProperty: intentional thenable test double, mirrors Supabase's real awaitable PostgrestFilterBuilder
     then: promise.then.bind(promise),
@@ -210,5 +212,79 @@ describe("fetchConnectionEdgesForRequest", () => {
 
     const { fetchConnectionEdgesForRequest } = await import("./connection-requests-queries");
     expect(await fetchConnectionEdgesForRequest(REQUEST_ID)).toEqual([]);
+  });
+});
+
+describe("fetchMyConnectionEdges", () => {
+  beforeEach(() => {
+    from.mockReset();
+  });
+
+  it("reads connection_edges scoped to non-revoked rows and maps to camelCase (RLS scopes to the caller's own tenant)", async () => {
+    const rows = [
+      { id: "e1", visible_tenant_id: RECIPIENT, connection_request_id: REQUEST_ID },
+      { id: "e2", visible_tenant_id: REQUESTER, connection_request_id: REQUEST_ID },
+    ];
+    const builder = makeBuilder({ data: rows, error: null });
+    from.mockReturnValue(builder);
+
+    const { fetchMyConnectionEdges } = await import("./connection-requests-queries");
+    const edges = await fetchMyConnectionEdges();
+
+    expect(from).toHaveBeenCalledWith("connection_edges");
+    expect(edges).toEqual([
+      { id: "e1", visibleTenantId: RECIPIENT, connectionRequestId: REQUEST_ID },
+      { id: "e2", visibleTenantId: REQUESTER, connectionRequestId: REQUEST_ID },
+    ]);
+  });
+
+  it("returns an empty array when there are no active edges yet", async () => {
+    from.mockReturnValue(makeBuilder({ data: [], error: null }));
+
+    const { fetchMyConnectionEdges } = await import("./connection-requests-queries");
+    expect(await fetchMyConnectionEdges()).toEqual([]);
+  });
+
+  it("returns an empty array on a query error rather than throwing", async () => {
+    from.mockReturnValue(makeBuilder({ data: null, error: new Error("boom") }));
+
+    const { fetchMyConnectionEdges } = await import("./connection-requests-queries");
+    expect(await fetchMyConnectionEdges()).toEqual([]);
+  });
+});
+
+describe("fetchMyPendingConnectionRequests", () => {
+  beforeEach(() => {
+    from.mockReset();
+  });
+
+  it("reads connection_requests filtered to suggested/pending -- RLS already scopes to the caller's own tenant as requester or recipient", async () => {
+    const rows = [
+      CONNECTION_REQUEST_ROW,
+      { ...CONNECTION_REQUEST_ROW, id: "r2", status: "suggested" },
+    ];
+    const builder = makeBuilder({ data: rows, error: null });
+    from.mockReturnValue(builder);
+
+    const { fetchMyPendingConnectionRequests } = await import("./connection-requests-queries");
+    const requests = await fetchMyPendingConnectionRequests();
+
+    expect(from).toHaveBeenCalledWith("connection_requests");
+    expect(builder.in).toHaveBeenCalledWith("status", ["suggested", "pending"]);
+    expect(requests).toEqual(rows);
+  });
+
+  it("returns an empty array when there are no suggested/pending requests", async () => {
+    from.mockReturnValue(makeBuilder({ data: [], error: null }));
+
+    const { fetchMyPendingConnectionRequests } = await import("./connection-requests-queries");
+    expect(await fetchMyPendingConnectionRequests()).toEqual([]);
+  });
+
+  it("returns an empty array on a query error rather than throwing", async () => {
+    from.mockReturnValue(makeBuilder({ data: null, error: new Error("boom") }));
+
+    const { fetchMyPendingConnectionRequests } = await import("./connection-requests-queries");
+    expect(await fetchMyPendingConnectionRequests()).toEqual([]);
   });
 });
