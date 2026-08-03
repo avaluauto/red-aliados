@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { type ChangeEvent, useMemo, useState } from "react";
 import { supabaseClient, useSessionClaims } from "@/features/identity-bridge";
 import { useCreateConnectionRequest } from "@/features/network-connections";
@@ -151,20 +151,28 @@ function VehicleCatalogCard({ vehicle, myTenantId, currentUserId }: VehicleCatal
       data-testid="catalog-vehicle-card"
       className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm"
     >
-      <div className="relative h-32 w-full bg-tint">
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
-          Verificado
-        </span>
-      </div>
-      <div className="flex flex-col gap-1 p-4">
-        <h3 className="font-head text-base font-semibold text-dark">
-          {vehicle.make} {vehicle.model}
-        </h3>
-        <p className="text-sm text-muted">{vehicle.year ?? "Año sin definir"}</p>
-        <p data-testid="catalog-vehicle-owner" className="text-xs text-muted">
-          {vehicle.tenantName ?? "Aliado"}
-        </p>
-
+      <Link
+        to="/catalogo/$vehicleId"
+        params={{ vehicleId: vehicle.id }}
+        data-testid="catalog-vehicle-detail-link"
+        className="contents"
+      >
+        <div className="relative h-32 w-full bg-tint">
+          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
+            Verificado
+          </span>
+        </div>
+        <div className="flex flex-col gap-1 p-4 pb-0">
+          <h3 className="font-head text-base font-semibold text-dark hover:text-primary">
+            {vehicle.make} {vehicle.model}
+          </h3>
+          <p className="text-sm text-muted">{vehicle.year ?? "Año sin definir"}</p>
+          <p data-testid="catalog-vehicle-owner" className="text-xs text-muted">
+            {vehicle.tenantName ?? "Aliado"}
+          </p>
+        </div>
+      </Link>
+      <div className="flex flex-col gap-1 px-4 pb-4">
         <div className="mt-2 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="font-head text-lg font-bold text-dark">

@@ -22,6 +22,7 @@ import { Route as MensajesRouteImport } from './routes/mensajes'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RedRouteImport } from './routes/red'
 import { Route as SolicitudesRouteImport } from './routes/solicitudes'
+import { Route as CatalogoVehicleIdRouteImport } from './routes/catalogo_.$vehicleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +89,11 @@ const SolicitudesRoute = SolicitudesRouteImport.update({
   path: '/solicitudes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CatalogoVehicleIdRoute = CatalogoVehicleIdRouteImport.update({
+  id: '/catalogo_/$vehicleId',
+  path: '/catalogo/$vehicleId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
+  '/catalogo/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
+  '/catalogo/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
+  '/catalogo_/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/red'
     | '/solicitudes'
+    | '/catalogo/$vehicleId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/red'
     | '/solicitudes'
+    | '/catalogo/$vehicleId'
   id:
     | '__root__'
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/red'
     | '/solicitudes'
+    | '/catalogo_/$vehicleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +209,7 @@ export interface RootRouteChildren {
   PerfilRoute: typeof PerfilRoute
   RedRoute: typeof RedRoute
   SolicitudesRoute: typeof SolicitudesRoute
+  CatalogoVehicleIdRoute: typeof CatalogoVehicleIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolicitudesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/catalogo_/$vehicleId': {
+      id: '/catalogo_/$vehicleId'
+      path: '/catalogo/$vehicleId'
+      fullPath: '/catalogo/$vehicleId'
+      preLoaderRoute: typeof CatalogoVehicleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerfilRoute: PerfilRoute,
   RedRoute: RedRoute,
   SolicitudesRoute: SolicitudesRoute,
+  CatalogoVehicleIdRoute: CatalogoVehicleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

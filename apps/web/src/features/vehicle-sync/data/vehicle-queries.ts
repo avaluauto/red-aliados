@@ -107,3 +107,38 @@ export async function fetchVisibleVehicles(): Promise<VisibleVehicle[]> {
     contactPhone: row.contact_phone,
   }));
 }
+
+export interface VehiclePhoto {
+  readonly id: string;
+  readonly url: string;
+  readonly position: number;
+}
+
+/**
+ * Reads a single vehicle snapshot's photos, ordered for gallery display --
+ * routes/catalogo.$vehicleId.tsx's detail page. `vehicle_snapshot_photos`
+ * has its own RLS policy (select_visible_vehicle_snapshot_photos,
+ * 0003_rls_policies.sql) mirroring the parent snapshot's own visibility via
+ * `app.vehicle_snapshot_visible()` -- no `vehicle_snapshots_public` join
+ * needed here, this table can be queried directly. Currently always empty
+ * in this sandbox (no photos were ever seeded) -- callers must render an
+ * honest empty/placeholder state, not assume rows exist. Returns an empty
+ * array on error, same read convention as every other fetch* in this file.
+ */
+export async function fetchVehiclePhotos(vehicleSnapshotId: string): Promise<VehiclePhoto[]> {
+  const { data, error } = await supabaseClient
+    .from("vehicle_snapshot_photos")
+    .select("id, url, position")
+    .eq("vehicle_snapshot_id", vehicleSnapshotId)
+    .order("position");
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data.map((row) => ({
+    id: row.id,
+    url: row.url,
+    position: row.position,
+  }));
+}
