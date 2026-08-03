@@ -47,6 +47,12 @@ export function Topbar() {
           >
             Tu red
           </Link>
+          <Link
+            to="/mensajes"
+            className="text-sm font-semibold text-dark transition-colors hover:text-primary"
+          >
+            Mensajes
+          </Link>
           <button
             type="button"
             data-testid="sign-out-button"

@@ -20,6 +20,7 @@ export {
   createConnectionRequest,
   fetchConnectionEdgesForRequest,
   fetchMyConnectionEdges,
+  fetchMyConnectionRequests,
   fetchMyPendingConnectionRequests,
   rejectConnectionRequest,
 } from "./data/connection-requests-queries";
@@ -45,6 +46,7 @@ export {
 export { useConnectionEdgesForRequest } from "./hooks/useConnectionEdgesForRequest";
 export { useCreateConnectionRequest } from "./hooks/useCreateConnectionRequest";
 export { useMyConnectionEdges } from "./hooks/useMyConnectionEdges";
+export { useMyConnectionRequests } from "./hooks/useMyConnectionRequests";
 export { useMyPendingConnectionRequests } from "./hooks/useMyPendingConnectionRequests";
 export type { RespondToConnectionRequestInput } from "./hooks/useRespondToConnectionRequest";
 export {

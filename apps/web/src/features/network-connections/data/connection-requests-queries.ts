@@ -198,3 +198,30 @@ export async function fetchMyPendingConnectionRequests(): Promise<ConnectionRequ
   }
   return data;
 }
+
+/**
+ * Reads EVERY `connection_requests` row visible to the caller's own tenant,
+ * any status, either direction (requester or recipient), newest first --
+ * routes/mensajes.tsx's thread list. Unlike `fetchMyPendingConnectionRequests`
+ * (which narrows to `suggested`/`pending` for routes/red.tsx's actionable
+ * list), this is the unfiltered read: connection-messaging's own spec says a
+ * thread exists "from the request's creation, pre-acceptance", so a message
+ * inbox needs every request the caller has ever been part of, not just the
+ * ones still awaiting a response. `select_own_connection_requests` RLS
+ * (0003_rls_policies.sql) already scopes visible rows to the caller's tenant
+ * as requester OR recipient -- no explicit tenant filter needed here, same
+ * convention `fetchMyConnectionEdges`/`fetchMyPendingConnectionRequests`
+ * already rely on. Read path: swallows errors to an empty array, same
+ * convention as every other fetch* in this file.
+ */
+export async function fetchMyConnectionRequests(): Promise<ConnectionRequestRow[]> {
+  const { data, error } = await supabaseClient
+    .from("connection_requests")
+    .select()
+    .order("created_at", { ascending: false });
+
+  if (error || !data) {
+    return [];
+  }
+  return data;
+}

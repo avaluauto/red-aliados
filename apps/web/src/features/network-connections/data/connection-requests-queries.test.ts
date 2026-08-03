@@ -20,6 +20,7 @@ function makeBuilder(result: { data: unknown; error: unknown }) {
     eq: vi.fn(() => builder),
     in: vi.fn(() => builder),
     is: vi.fn(() => builder),
+    order: vi.fn(() => builder),
     single: vi.fn(() => promise),
     // biome-ignore lint/suspicious/noThenProperty: intentional thenable test double, mirrors Supabase's real awaitable PostgrestFilterBuilder
     then: promise.then.bind(promise),
@@ -250,6 +251,41 @@ describe("fetchMyConnectionEdges", () => {
 
     const { fetchMyConnectionEdges } = await import("./connection-requests-queries");
     expect(await fetchMyConnectionEdges()).toEqual([]);
+  });
+});
+
+describe("fetchMyConnectionRequests", () => {
+  beforeEach(() => {
+    from.mockReset();
+  });
+
+  it("reads every connection_requests row ordered newest-first -- RLS already scopes to the caller's own tenant as requester or recipient", async () => {
+    const rows = [
+      { ...CONNECTION_REQUEST_ROW, id: "r2", status: "accepted" },
+      CONNECTION_REQUEST_ROW,
+    ];
+    const builder = makeBuilder({ data: rows, error: null });
+    from.mockReturnValue(builder);
+
+    const { fetchMyConnectionRequests } = await import("./connection-requests-queries");
+    const requests = await fetchMyConnectionRequests();
+
+    expect(from).toHaveBeenCalledWith("connection_requests");
+    expect(requests).toEqual(rows);
+  });
+
+  it("returns an empty array when the caller has no visible requests yet", async () => {
+    from.mockReturnValue(makeBuilder({ data: [], error: null }));
+
+    const { fetchMyConnectionRequests } = await import("./connection-requests-queries");
+    expect(await fetchMyConnectionRequests()).toEqual([]);
+  });
+
+  it("returns an empty array on a query error rather than throwing", async () => {
+    from.mockReturnValue(makeBuilder({ data: null, error: new Error("boom") }));
+
+    const { fetchMyConnectionRequests } = await import("./connection-requests-queries");
+    expect(await fetchMyConnectionRequests()).toEqual([]);
   });
 });
 
