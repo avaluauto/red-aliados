@@ -67,6 +67,30 @@ export async function createSearchRequest(
 }
 
 /**
+ * Reads the tenant's own `search_requests` rows (most recent first) -- the
+ * listing read this module was previously missing: createSearchRequest only
+ * returns the single row it just inserted, and fetchFanOutMatches/
+ * fetchOwnInventoryVehicles both need a specific request id already in hand.
+ * `select_own_tenant_search_requests` (0003_rls_policies.sql) already scopes
+ * visible rows to `tenant_id = app.current_tenant_id()`; this function adds
+ * no new RLS surface. Follows the same READ convention as
+ * fetchOwnInventoryVehicles/fetchConnectedTenantIds/fetchFanOutMatches above
+ * -- swallows errors to an empty array, never throws.
+ */
+export async function fetchOwnSearchRequests(tenantId: string): Promise<SearchRequestRow[]> {
+  const { data, error } = await supabaseClient
+    .from("search_requests")
+    .select()
+    .eq("tenant_id", tenantId)
+    .order("created_at", { ascending: false });
+
+  if (error || !data) {
+    return [];
+  }
+  return data;
+}
+
+/**
  * Own-Inventory-First Search: reads the requesting tenant's own vehicles
  * through `vehicle_snapshots_public` (0004_public_views.sql) -- the ONE read
  * path for vehicle inventory in this codebase, never the base

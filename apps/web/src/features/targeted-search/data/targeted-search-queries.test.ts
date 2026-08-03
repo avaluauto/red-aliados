@@ -20,6 +20,7 @@ function makeBuilder(result: { data: unknown; error: unknown }) {
     update: vi.fn(() => builder),
     eq: vi.fn(() => builder),
     is: vi.fn(() => builder),
+    order: vi.fn(() => builder),
     single: vi.fn(() => promise),
     maybeSingle: vi.fn(() => promise),
     // biome-ignore lint/suspicious/noThenProperty: intentional thenable test double, mirrors Supabase's real awaitable PostgrestFilterBuilder
@@ -80,6 +81,41 @@ describe("createSearchRequest", () => {
     await expect(
       createSearchRequest({ tenantId: TENANT_A, requestedBy: USER_A, criteria: {} }),
     ).rejects.toThrow("permission denied");
+  });
+});
+
+describe("fetchOwnSearchRequests", () => {
+  it("reads search_requests rows scoped to the tenant, most recent first", async () => {
+    const rows = [
+      {
+        id: SEARCH_REQUEST_ID,
+        tenant_id: TENANT_A,
+        requested_by: USER_A,
+        criteria: { make: "Toyota" },
+        status: "open",
+        opted_in_fan_out: false,
+        opted_in_at: null,
+        created_at: "2026-08-01T12:00:00.000Z",
+        updated_at: "2026-08-01T12:00:00.000Z",
+      },
+    ];
+    const builder = makeBuilder({ data: rows, error: null });
+    from.mockReturnValue(builder);
+
+    const { fetchOwnSearchRequests } = await import("./targeted-search-queries");
+    const result = await fetchOwnSearchRequests(TENANT_A);
+
+    expect(from).toHaveBeenCalledWith("search_requests");
+    expect(builder.eq).toHaveBeenCalledWith("tenant_id", TENANT_A);
+    expect(builder.order).toHaveBeenCalledWith("created_at", { ascending: false });
+    expect(result).toEqual(rows);
+  });
+
+  it("returns an empty array (never throws) on a query error", async () => {
+    from.mockReturnValue(makeBuilder({ data: null, error: new Error("boom") }));
+
+    const { fetchOwnSearchRequests } = await import("./targeted-search-queries");
+    expect(await fetchOwnSearchRequests(TENANT_A)).toEqual([]);
   });
 });
 

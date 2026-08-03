@@ -21,6 +21,7 @@ export {
   fetchConnectedTenantIds,
   fetchFanOutMatches,
   fetchOwnInventoryVehicles,
+  fetchOwnSearchRequests,
   optInToFanOut,
   proceedOnMatch,
   respondWithMatch,
@@ -39,6 +40,7 @@ export {
 } from "./domain/search-matching";
 export { useCreateSearchRequest } from "./hooks/useCreateSearchRequest";
 export { type OptInFanOutInput, useOptInFanOut } from "./hooks/useOptInFanOut";
+export { useOwnSearchRequests } from "./hooks/useOwnSearchRequests";
 export { useProceedOnMatch } from "./hooks/useProceedOnMatch";
 export { useRespondWithMatch } from "./hooks/useRespondWithMatch";
 export {
