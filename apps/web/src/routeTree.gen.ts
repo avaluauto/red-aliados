@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as E2eConnectionMessagingRouteImport } from './routes/e2e-connection-messaging'
 import { Route as E2eNetworkConnectionsRouteImport } from './routes/e2e-network-connections'
 import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
@@ -25,6 +26,11 @@ import { Route as SolicitudesRouteImport } from './routes/solicitudes'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const E2eConnectionMessagingRoute = E2eConnectionMessagingRouteImport.update({
@@ -85,6 +91,7 @@ const SolicitudesRoute = SolicitudesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
   '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
   '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
   '/e2e-network-guard': typeof E2eNetworkGuardRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/catalogo'
     | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/catalogo'
     | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/catalogo'
     | '/e2e-connection-messaging'
     | '/e2e-network-connections'
     | '/e2e-network-guard'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogoRoute: typeof CatalogoRoute
   E2eConnectionMessagingRoute: typeof E2eConnectionMessagingRoute
   E2eNetworkConnectionsRoute: typeof E2eNetworkConnectionsRoute
   E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e2e-connection-messaging': {
@@ -277,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogoRoute: CatalogoRoute,
   E2eConnectionMessagingRoute: E2eConnectionMessagingRoute,
   E2eNetworkConnectionsRoute: E2eNetworkConnectionsRoute,
   E2eNetworkGuardRoute: E2eNetworkGuardRoute,

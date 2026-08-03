@@ -33,7 +33,13 @@ export function Topbar() {
             to="/"
             className="text-sm font-semibold text-dark transition-colors hover:text-primary"
           >
-            Mi inventario
+            Panel
+          </Link>
+          <Link
+            to="/catalogo"
+            className="text-sm font-semibold text-dark transition-colors hover:text-primary"
+          >
+            Catálogo
           </Link>
           <Link
             to="/solicitudes"

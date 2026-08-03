@@ -34,16 +34,6 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const CURRENCY_FORMATTER = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-  maximumFractionDigits: 0,
-});
-
-function formatPrice(value: number | null): string {
-  return value === null ? "Sin definir" : CURRENCY_FORMATTER.format(value);
-}
-
 // --- Activity feed -----------------------------------------------------
 // Merges two REAL, already-fetchable signals into one feed, newest first:
 // recently accepted connections (network-connections) and recent incoming
@@ -258,37 +248,6 @@ function ReputationStatCard({ tenantId }: { readonly tenantId: string | undefine
   );
 }
 
-// --- Vehicle inventory grid -------------------------------------------
-
-function VehicleCard({ vehicle }: { readonly vehicle: OwnTenantVehicle }) {
-  return (
-    <article
-      data-testid="vehicle-card"
-      className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm"
-    >
-      <div className="relative h-32 w-full bg-tint">
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm">
-          {vehicle.status}
-        </span>
-      </div>
-      <div className="flex flex-col gap-1 p-4">
-        <h3 className="font-head text-base font-semibold text-dark">
-          {vehicle.make} {vehicle.model}
-        </h3>
-        <p className="text-sm text-muted">{vehicle.year ?? "Año sin definir"}</p>
-        <div className="mt-2 flex items-center justify-between">
-          <span className="font-head text-lg font-bold text-dark">
-            {formatPrice(vehicle.allyPrice)}
-          </span>
-          <span className="rounded-full bg-tint px-2.5 py-1 text-[11px] font-semibold text-primary">
-            {vehicle.viewsCount} vistas
-          </span>
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export function HomePage() {
   const { data: session } = useSessionClaims();
   const tenantId = session?.status === "authenticated" ? session.claims.tenantId : undefined;
@@ -381,25 +340,6 @@ export function HomePage() {
             </div>
           </section>
         </div>
-
-        <section className="flex flex-col gap-4">
-          <h2 className="font-head text-lg font-semibold text-dark">Mi inventario</h2>
-          {vehiclesLoading ? (
-            <p data-testid="vehicles-loading" className="text-sm text-muted">
-              Cargando…
-            </p>
-          ) : vehicles && vehicles.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {vehicles.map((vehicle) => (
-                <VehicleCard key={vehicle.id} vehicle={vehicle} />
-              ))}
-            </div>
-          ) : (
-            <p data-testid="vehicles-empty" className="text-sm text-muted">
-              Todavía no tenés vehículos sincronizados.
-            </p>
-          )}
-        </section>
       </main>
     </div>
   );

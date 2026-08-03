@@ -127,30 +127,21 @@ describe("HomePage", () => {
 
     await renderWithRouter(<HomePage />);
 
-    expect(screen.getByTestId("vehicles-loading")).toBeInTheDocument();
     expect(screen.getByTestId("vehicle-views-chart-loading")).toBeInTheDocument();
   });
 
-  it("shows friendly empty states when the tenant has no vehicles", async () => {
+  it("shows a friendly empty state for the chart when the tenant has no vehicles", async () => {
     useOwnTenantVehicles.mockReturnValue({ data: [], isPending: false });
 
     await renderWithRouter(<HomePage />);
 
-    expect(screen.getByTestId("vehicles-empty")).toBeInTheDocument();
-    expect(screen.queryByTestId("vehicle-card")).not.toBeInTheDocument();
     expect(screen.getByTestId("vehicle-views-chart-empty")).toBeInTheDocument();
   });
 
-  it("renders a card per vehicle once loaded, with formatted price and a views badge", async () => {
+  it("renders the views chart once vehicles load", async () => {
     useOwnTenantVehicles.mockReturnValue({ data: [VEHICLE], isPending: false });
 
     await renderWithRouter(<HomePage />);
-
-    const cards = screen.getAllByTestId("vehicle-card");
-    expect(cards).toHaveLength(1);
-    expect(cards[0]).toHaveTextContent("Toyota Corolla");
-    expect(cards[0]).toHaveTextContent("available");
-    expect(cards[0]).toHaveTextContent("12 vistas");
 
     expect(screen.getByTestId("vehicle-views-chart")).toBeInTheDocument();
     expect(screen.getAllByTestId("vehicle-views-bar")).toHaveLength(1);
