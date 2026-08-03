@@ -98,10 +98,10 @@ Chain strategy: stacked-to-main
 
 ## Phase 9: targeted-search
 
-- [ ] 9.1 Vitest + `features/targeted-search/domain`: own-inventory-first order, opt-in gate, connected-only fan-out filter
-- [ ] 9.2 `.../data,hooks`: own-inventory search, opt-in fan-out query, proceed -> Opportunity event
-- [ ] 9.3 `.../components`: search + match + proceed UI
-- [ ] 9.4 Playwright: unconnected tenant excluded; view-only shares nothing; proceed fires V2 Opportunity
+- [x] 9.1 Vitest + `features/targeted-search/domain`: own-inventory-first order, opt-in gate, connected-only fan-out filter (`search-matching.ts` + `match-view-gate.ts`)
+- [x] 9.2 `.../data,hooks`: own-inventory search, opt-in fan-out query, proceed -> Opportunity event (`respondWithMatch` reuses network-connections' `createConnectionRequest`; `proceedOnMatch` inserts `search_opportunities_out` -- the local event, no live V2 CRM exists to actually create an Opportunity -- see apply-progress)
+- [x] 9.3 `.../components`: search + match + proceed UI (`SearchRequestForm`, `SearchMatchList` with a client-only view gate before Proceed is enabled)
+- [x] 9.4 Playwright: unconnected tenant excluded (asserted via the actual `search_request_targets` insert body, RLS proof documented as verification gap, same as PR3/PR6/PR8 -- see apply-progress); view-only shares nothing (zero network requests fired by viewing); proceed fires the local `search_opportunities_out` event (not a live V2 Opportunity -- no live V2 CRM in this sandbox)
 
 ## Phase 10: Cross-Capability Verification
 
