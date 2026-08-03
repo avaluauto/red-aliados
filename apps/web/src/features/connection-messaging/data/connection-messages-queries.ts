@@ -105,6 +105,39 @@ export async function sendConnectionMessage(
   return data;
 }
 
+/**
+ * Reads the most recent `limit` connection_messages sent BY OTHER tenants
+ * across every thread the caller's own tenant is a party to --
+ * routes/index.tsx's "Actividad reciente" feed. This is a deliberately
+ * small stand-in for a proper per-tenant "unread messages" feature, which
+ * does not exist yet: there is no read-receipt/unread tracking anywhere in
+ * this schema (connection_messages' own table comment: "No attachments/
+ * presence/read-receipts", connection-messaging spec's Scope Cap). Instead
+ * of fabricating an "unread count", this reads real recent rows.
+ * `select_own_thread_messages` (0003_rls_policies.sql) already scopes
+ * visible rows to threads the caller's tenant is requester/recipient of --
+ * the `.neq` here only excludes the caller's OWN outgoing messages, so the
+ * feed reads as "things aliados sent you", not an echo of your own sent
+ * messages. Read path: swallows errors to an empty array, same convention
+ * as every other fetch* in this file.
+ */
+export async function fetchRecentIncomingMessages(
+  tenantId: string,
+  limit: number,
+): Promise<ConnectionMessageRow[]> {
+  const { data, error } = await supabaseClient
+    .from("connection_messages")
+    .select()
+    .neq("sender_tenant_id", tenantId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+  return data;
+}
+
 export type ConnectionMessageInsertHandler = (message: ConnectionMessageRow) => void;
 
 /**

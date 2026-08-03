@@ -12,6 +12,7 @@ export type {
 export {
   fetchConnectionMessages,
   fetchConnectionRequestParty,
+  fetchRecentIncomingMessages,
   sendConnectionMessage,
   subscribeToConnectionMessages,
 } from "./data/connection-messages-queries";
@@ -20,4 +21,8 @@ export {
   type ConnectionMessagesThreadResult,
   useConnectionMessagesThread,
 } from "./hooks/useConnectionMessagesThread";
+export {
+  RECENT_INCOMING_MESSAGES_LIMIT,
+  useRecentIncomingMessages,
+} from "./hooks/useRecentIncomingMessages";
 export { useSendConnectionMessage } from "./hooks/useSendConnectionMessage";

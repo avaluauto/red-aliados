@@ -24,7 +24,9 @@ function makeBuilder(result: { data: unknown; error: unknown }) {
     select: vi.fn(() => builder),
     insert: vi.fn(() => builder),
     eq: vi.fn(() => builder),
+    neq: vi.fn(() => builder),
     order: vi.fn(() => builder),
+    limit: vi.fn(() => promise),
     single: vi.fn(() => promise),
     maybeSingle: vi.fn(() => promise),
     // biome-ignore lint/suspicious/noThenProperty: intentional thenable test double, mirrors Supabase's real awaitable PostgrestFilterBuilder
@@ -118,6 +120,39 @@ describe("fetchConnectionMessages", () => {
 
     const { fetchConnectionMessages } = await import("./connection-messages-queries");
     expect(await fetchConnectionMessages(REQUEST_ID)).toEqual([]);
+  });
+});
+
+describe("fetchRecentIncomingMessages", () => {
+  it("excludes the caller's own tenant, orders newest first, and limits to N", async () => {
+    const rows = [
+      {
+        id: "m2",
+        connection_request_id: REQUEST_ID,
+        sender_tenant_id: RECIPIENT,
+        sender_user_id: SENDER_USER,
+        body: "hola",
+        created_at: "2026-08-02T12:00:00.000Z",
+      },
+    ];
+    const builder = makeBuilder({ data: rows, error: null });
+    from.mockReturnValue(builder);
+
+    const { fetchRecentIncomingMessages } = await import("./connection-messages-queries");
+    const messages = await fetchRecentIncomingMessages(REQUESTER, 5);
+
+    expect(from).toHaveBeenCalledWith("connection_messages");
+    expect(builder.neq).toHaveBeenCalledWith("sender_tenant_id", REQUESTER);
+    expect(builder.order).toHaveBeenCalledWith("created_at", { ascending: false });
+    expect(builder.limit).toHaveBeenCalledWith(5);
+    expect(messages).toEqual(rows);
+  });
+
+  it("returns an empty array (never throws) on a query error", async () => {
+    from.mockReturnValue(makeBuilder({ data: null, error: new Error("boom") }));
+
+    const { fetchRecentIncomingMessages } = await import("./connection-messages-queries");
+    expect(await fetchRecentIncomingMessages(REQUESTER, 5)).toEqual([]);
   });
 });
 
