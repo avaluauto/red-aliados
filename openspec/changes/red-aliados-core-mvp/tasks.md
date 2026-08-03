@@ -105,5 +105,5 @@ Chain strategy: stacked-to-main
 
 ## Phase 10: Cross-Capability Verification
 
-- [ ] 10.1 Playwright: full success-criteria flow (signin -> sync -> connect -> reveal -> message -> reputation -> search)
-- [ ] 10.2 Update docs; log open questions (module name, V2 JWT alg, webhook auth shape) as follow-ups
+- [x] 10.1 Playwright: full success-criteria flow (signin -> sync -> connect -> reveal -> message -> reputation -> search) -- `apps/web/e2e/cross-capability-flow.spec.ts`, one continuous test composing the existing per-feature harness routes with a single consistent tenant/request identity carried across every step
+- [x] 10.2 Update docs; log open questions (module name, V2 JWT alg, webhook auth shape, ally_price/min_price) as follow-ups; catalog known verification gaps -- see `README.md`
