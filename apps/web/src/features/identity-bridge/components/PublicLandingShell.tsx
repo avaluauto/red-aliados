@@ -1,8 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { getAppOrigin } from "@/shared/lib/host-mode";
 
 // Presentational shell -- no domain logic of its own; the actual sign-in
 // form/call lives at the dedicated /login route (../../../routes/login.tsx
-// -> SignInForm.tsx -> ../hooks/useSignIn -> ../data/sign-in). Structurally
+// -> SignInForm.tsx -> ../hooks/useSignIn -> ../data/sign-in). Renders on
+// the marketing/root host only (routes/__root.tsx renders it directly
+// whenever the hostname does NOT start with "app." -- see
+// shared/lib/host-mode.ts); that host has effectively one page. Structurally
 // mirrors a marketing landing page (header / hero / stats / features /
 // how-it-works / banner / footer), restyled to match the reference
 // prototype's layout (two-column hero with a product-preview card, a
@@ -11,10 +14,11 @@ import { Link } from "@tanstack/react-router";
 // index.css's @theme block) and original copy. Two things are deliberately
 // removed/replaced from the reference: no "Comunidad" section, and no
 // open/public vehicle catalog ("Explorar vehículos" or similar) -- Red
-// Aliados never has an anonymous browsing surface. The header's "Iniciar
-// sesión" button navigates to /login instead of toggling an inline panel --
-// see routes/login.tsx for that page; there is still no self-registration
-// anywhere in this shell.
+// Aliados never has an anonymous browsing surface. The "Iniciar sesión"
+// CTAs are plain cross-origin <a> links to the app host's /login (built via
+// getAppOrigin()) rather than TanStack Router's <Link> -- this page and
+// /login now live on different hosts (marketing vs. "app."), so this is a
+// real cross-origin navigation, not client-side routing.
 
 type Stat = {
   readonly big: string;
@@ -149,6 +153,7 @@ const AVATAR_STACK_OPACITIES: readonly number[] = [1, 0.85, 0.7, 0.55];
 
 export function PublicLandingShell() {
   const year = new Date().getFullYear();
+  const loginUrl = `${getAppOrigin()}/login`;
 
   return (
     <div className="min-h-screen bg-white">
@@ -178,12 +183,12 @@ export function PublicLandingShell() {
               </a>
             ))}
           </nav>
-          <Link
-            to="/login"
+          <a
+            href={loginUrl}
             className="justify-self-end rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90"
           >
             Iniciar sesión
-          </Link>
+          </a>
         </div>
       </header>
 
@@ -204,12 +209,12 @@ export function PublicLandingShell() {
               atrás el caos de los grupos de WhatsApp.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/login"
+              <a
+                href={loginUrl}
                 className="rounded-xl bg-primary px-7 py-[15px] text-center text-sm font-semibold text-white shadow-md transition-colors hover:bg-primary/90"
               >
                 Iniciar sesión
-              </Link>
+              </a>
               <a
                 href="#como-funciona"
                 className="rounded-xl border border-border-2 bg-white px-7 py-[15px] text-center text-sm font-semibold text-dark transition-colors hover:border-primary hover:text-primary"
@@ -334,12 +339,12 @@ export function PublicLandingShell() {
               disponibilidad a los gritos en un grupo.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                to="/login"
+              <a
+                href={loginUrl}
                 className="rounded-xl bg-white px-7 py-[15px] text-sm font-semibold text-primary shadow-md transition-colors hover:bg-white/90"
               >
                 Iniciar sesión
-              </Link>
+              </a>
               <a
                 href="#como-funciona"
                 className="rounded-xl border border-white/40 bg-white/10 px-7 py-[15px] text-sm font-semibold text-white transition-colors hover:bg-white/20"

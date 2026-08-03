@@ -1,6 +1,11 @@
 // Public surface of identity-bridge. Other features/the app shell import
 // from here, never reaching into ./domain, ./data, ./hooks directly.
 export { IdentityGate } from "./components/IdentityGate";
+// Marketing/root-host landing page. The app shell (routes/__root.tsx) renders
+// it directly for the non-"app." host branch -- see host-mode.ts. It's no
+// longer IdentityGate's unauthenticated fallback (see
+// SessionUnavailableState.tsx).
+export { PublicLandingShell } from "./components/PublicLandingShell";
 export type { SignInFormProps } from "./components/SignInForm";
 // SignInForm is reused as-is by the dedicated /login route
 // (apps/web/src/routes/login.tsx) -- see that component's own doc-comment

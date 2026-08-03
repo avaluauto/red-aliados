@@ -10,8 +10,8 @@ import { render } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 // Shared test helper for components that render TanStack Router's <Link>
-// (e.g. PublicLandingShell) or call useNavigate (e.g. login.tsx's
-// LoginPage) -- both need a real router context to work, which plain
+// or call useNavigate (e.g. SessionUnavailableState.tsx's redirect-to-/login,
+// login.tsx's LoginPage) -- both need a real router context to work, which plain
 // @testing-library/react `render` doesn't provide. Builds a minimal
 // in-memory router with a "/" route (rendering the component under test)
 // and a stand-in "/login" route, then awaits the router's initial load so
