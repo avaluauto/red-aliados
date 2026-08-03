@@ -18,6 +18,7 @@ import { Route as E2eTargetedSearchRouteImport } from './routes/e2e-targeted-sea
 import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-directory'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MensajesRouteImport } from './routes/mensajes'
+import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RedRouteImport } from './routes/red'
 import { Route as SolicitudesRouteImport } from './routes/solicitudes'
 
@@ -66,6 +67,11 @@ const MensajesRoute = MensajesRouteImport.update({
   path: '/mensajes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RedRoute = RedRouteImport.update({
   id: '/red',
   path: '/red',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
   '/login': typeof LoginRoute
   '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
   '/login': typeof LoginRoute
   '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
   '/login': typeof LoginRoute
   '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
   '/red': typeof RedRoute
   '/solicitudes': typeof SolicitudesRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/e2e-tenant-directory'
     | '/login'
     | '/mensajes'
+    | '/perfil'
     | '/red'
     | '/solicitudes'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/e2e-tenant-directory'
     | '/login'
     | '/mensajes'
+    | '/perfil'
     | '/red'
     | '/solicitudes'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/e2e-tenant-directory'
     | '/login'
     | '/mensajes'
+    | '/perfil'
     | '/red'
     | '/solicitudes'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   E2eTenantDirectoryRoute: typeof E2eTenantDirectoryRoute
   LoginRoute: typeof LoginRoute
   MensajesRoute: typeof MensajesRoute
+  PerfilRoute: typeof PerfilRoute
   RedRoute: typeof RedRoute
   SolicitudesRoute: typeof SolicitudesRoute
 }
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MensajesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/red': {
       id: '/red'
       path: '/red'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   E2eTenantDirectoryRoute: E2eTenantDirectoryRoute,
   LoginRoute: LoginRoute,
   MensajesRoute: MensajesRoute,
+  PerfilRoute: PerfilRoute,
   RedRoute: RedRoute,
   SolicitudesRoute: SolicitudesRoute,
 }

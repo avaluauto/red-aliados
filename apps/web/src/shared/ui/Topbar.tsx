@@ -53,6 +53,12 @@ export function Topbar() {
           >
             Mensajes
           </Link>
+          <Link
+            to="/perfil"
+            className="text-sm font-semibold text-dark transition-colors hover:text-primary"
+          >
+            Perfil
+          </Link>
           <button
             type="button"
             data-testid="sign-out-button"
