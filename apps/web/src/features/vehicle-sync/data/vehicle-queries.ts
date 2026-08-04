@@ -17,6 +17,8 @@ export interface OwnTenantVehicle {
   readonly status: string;
   readonly viewsCount: number;
   readonly visibilityTier: VisibilityTier;
+  /** Raw ISO timestamptz string from `tenant_member_since` (0012 migration) -- always non-null here since this is always the caller's own tenant (`owner` tier). */
+  readonly tenantMemberSince: string | null;
 }
 
 /**
@@ -32,7 +34,9 @@ export interface OwnTenantVehicle {
 export async function fetchOwnTenantVehicles(tenantId: string): Promise<OwnTenantVehicle[]> {
   const { data, error } = await supabaseClient
     .from("vehicle_snapshots_public")
-    .select("id, make, model, year, ally_price, min_price, status, views_count, visibility_tier")
+    .select(
+      "id, make, model, year, ally_price, min_price, status, views_count, visibility_tier, tenant_member_since",
+    )
     .eq("tenant_id", tenantId);
 
   if (error || !data) {
@@ -49,6 +53,7 @@ export async function fetchOwnTenantVehicles(tenantId: string): Promise<OwnTenan
     status: row.status,
     viewsCount: row.views_count,
     visibilityTier: row.visibility_tier,
+    tenantMemberSince: row.tenant_member_since,
   }));
 }
 
@@ -65,6 +70,8 @@ export interface VisibleVehicle {
   readonly visibilityTier: VisibilityTier;
   readonly tenantName: string | null;
   readonly contactPhone: string | null;
+  /** Raw ISO timestamptz string from `tenant_member_since` (0012 migration) -- masked identically to tenantName/contactPhone (owner/connected tier only), null otherwise. */
+  readonly tenantMemberSince: string | null;
 }
 
 /**
@@ -85,7 +92,7 @@ export async function fetchVisibleVehicles(): Promise<VisibleVehicle[]> {
   const { data, error } = await supabaseClient
     .from("vehicle_snapshots_public")
     .select(
-      "id, tenant_id, make, model, year, ally_price, min_price, status, views_count, visibility_tier, tenant_name, contact_phone",
+      "id, tenant_id, make, model, year, ally_price, min_price, status, views_count, visibility_tier, tenant_name, contact_phone, tenant_member_since",
     );
 
   if (error || !data) {
@@ -105,6 +112,7 @@ export async function fetchVisibleVehicles(): Promise<VisibleVehicle[]> {
     visibilityTier: row.visibility_tier,
     tenantName: row.tenant_name,
     contactPhone: row.contact_phone,
+    tenantMemberSince: row.tenant_member_since,
   }));
 }
 

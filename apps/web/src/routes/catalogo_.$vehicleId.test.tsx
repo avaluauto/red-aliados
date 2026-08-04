@@ -72,6 +72,7 @@ const OWN_VEHICLE = {
   visibilityTier: "owner" as const,
   tenantName: "Concesionaria Test Norte",
   contactPhone: null,
+  tenantMemberSince: "2019-03-15T00:00:00Z",
 };
 
 const PEER_VEHICLE = {
@@ -87,6 +88,7 @@ const PEER_VEHICLE = {
   visibilityTier: "connected" as const,
   tenantName: "Motos del Sur",
   contactPhone: "+57 300 1234567",
+  tenantMemberSince: "2021-07-01T00:00:00Z",
 };
 
 // Builds a minimal in-memory router with a "/catalogo/$vehicleId" route
@@ -150,7 +152,12 @@ describe("VehicleDetailPage", () => {
     useVehiclePhotos.mockReturnValue({ data: [], isPending: false });
     useCreateConnectionRequest.mockReturnValue({ mutate: vi.fn(), isPending: false });
     useCreateSearchRequest.mockReturnValue({ mutate: vi.fn(), isPending: false });
-    useReputationScore.mockReturnValue({ score: null, sampleSize: 0, isLoading: false });
+    useReputationScore.mockReturnValue({
+      score: null,
+      sampleSize: 0,
+      responseRate: null,
+      isLoading: false,
+    });
   });
 
   it("renders real vehicle data for the matching id", async () => {
@@ -165,8 +172,26 @@ describe("VehicleDetailPage", () => {
     expect(screen.getByTestId("vehicle-identity-phone")).toHaveTextContent("+57 300 1234567");
   });
 
+  it("shows the technical specs section with honest placeholders, never fabricated values", async () => {
+    useVisibleVehicles.mockReturnValue({ data: [PEER_VEHICLE], isPending: false });
+
+    await renderDetailRoute("v2");
+
+    expect(screen.getByTestId("vehicle-technical-specs")).toBeInTheDocument();
+    const items = screen.getAllByTestId("vehicle-technical-spec-item");
+    expect(items).toHaveLength(9);
+    for (const item of items) {
+      expect(item).toHaveTextContent("Por sincronizar");
+    }
+  });
+
   it("shows an honest masking explanation when identity isn't revealed", async () => {
-    const maskedVehicle = { ...PEER_VEHICLE, tenantName: null, contactPhone: null };
+    const maskedVehicle = {
+      ...PEER_VEHICLE,
+      tenantName: null,
+      contactPhone: null,
+      tenantMemberSince: null,
+    };
     useVisibleVehicles.mockReturnValue({ data: [maskedVehicle], isPending: false });
 
     await renderDetailRoute("v2");
@@ -174,6 +199,40 @@ describe("VehicleDetailPage", () => {
     expect(screen.getByTestId("vehicle-identity-masked")).toHaveTextContent(
       "Identidad oculta hasta aceptar conexión.",
     );
+    expect(screen.queryByTestId("vehicle-identity-member-since")).not.toBeInTheDocument();
+  });
+
+  it("shows real 'miembro desde' (year only) and response rate when identity and reputation are revealed", async () => {
+    useVisibleVehicles.mockReturnValue({ data: [PEER_VEHICLE], isPending: false });
+    useReputationScore.mockReturnValue({
+      score: 82,
+      sampleSize: 5,
+      responseRate: 80,
+      isLoading: false,
+    });
+
+    await renderDetailRoute("v2");
+
+    expect(screen.getByTestId("vehicle-identity-member-since")).toHaveTextContent(
+      "Miembro desde 2021",
+    );
+    expect(screen.getByTestId("vehicle-identity-response-rate")).toHaveTextContent(
+      "80% de respuesta",
+    );
+  });
+
+  it("does not fabricate a response rate when there is no reputation history yet", async () => {
+    useVisibleVehicles.mockReturnValue({ data: [PEER_VEHICLE], isPending: false });
+    useReputationScore.mockReturnValue({
+      score: null,
+      sampleSize: 0,
+      responseRate: null,
+      isLoading: false,
+    });
+
+    await renderDetailRoute("v2");
+
+    expect(screen.queryByTestId("vehicle-identity-response-rate")).not.toBeInTheDocument();
   });
 
   it("shows a single placeholder area, not fabricated photos, when there are no photos", async () => {

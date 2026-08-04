@@ -33,7 +33,9 @@ describe("useOwnTenantVehicles", () => {
     useSessionClaims.mockReturnValue({
       data: { status: "authenticated", claims: { tenantId: TENANT_ID } },
     });
-    const vehicles = [{ id: "v1", make: "Toyota", model: "Corolla" }];
+    const vehicles = [
+      { id: "v1", make: "Toyota", model: "Corolla", tenantMemberSince: "2020-01-01T00:00:00Z" },
+    ];
     fetchOwnTenantVehicles.mockResolvedValue(vehicles);
 
     const { result } = renderHook(() => useOwnTenantVehicles(), { wrapper });

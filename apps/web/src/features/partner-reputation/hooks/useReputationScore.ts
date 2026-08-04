@@ -4,13 +4,41 @@
 // for network-connections).
 import { useQuery } from "@tanstack/react-query";
 import { fetchReputationEvents } from "../data/reputation-events-queries";
-import { computeReputationScore, type ReputationScoreResult } from "../domain/reputation-score";
+import {
+  computeReputationScore,
+  type ReputationEventInput,
+  type ReputationScoreResult,
+} from "../domain/reputation-score";
 
 export interface UseReputationScoreResult extends ReputationScoreResult {
   readonly isLoading: boolean;
+  /**
+   * Fraction (0-100) of this tenant's terminal `reputation_events` that were
+   * NOT `expired` -- i.e. the tenant actually gave an answer (accepted or
+   * rejected) rather than letting the request time out. `null` under the
+   * same "unrated" convention as `score`: no terminal events yet, or the
+   * underlying read errored/was denied.
+   */
+  readonly responseRate: number | null;
 }
 
 const UNRATED: ReputationScoreResult = { score: null, sampleSize: 0 };
+
+/**
+ * Sibling to `computeReputationScore` -- kept in this hook file rather than
+ * domain/reputation-score.ts on purpose: it's a real computation over the
+ * same already-fetched `reputation_events` rows, but it isn't part of the
+ * spec's "Score Computation" surface (computeReputationScore's own tests
+ * assert an exact `{ score, sampleSize }` shape), so it doesn't belong
+ * inside that pure scoring function.
+ */
+function computeResponseRate(events: readonly ReputationEventInput[]): number | null {
+  if (events.length === 0) {
+    return null;
+  }
+  const answered = events.filter((event) => event.eventType !== "expired").length;
+  return Math.round((answered / events.length) * 100);
+}
 
 /**
  * A tenant's computed reputation score. Resolves to `{ score: null,
@@ -29,6 +57,7 @@ export function useReputationScore(tenantId: string | undefined): UseReputationS
   });
 
   const result = query.data ? computeReputationScore(query.data) : UNRATED;
+  const responseRate = query.data ? computeResponseRate(query.data) : null;
 
-  return { ...result, isLoading: query.isPending };
+  return { ...result, responseRate, isLoading: query.isPending };
 }

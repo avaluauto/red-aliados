@@ -19,11 +19,13 @@ import { Topbar } from "@/shared/ui/Topbar";
 // ["vehicle-sync", "visible-vehicles"] once catalogo.tsx has been visited,
 // and is cheap to fetch fresh otherwise).
 //
-// Deliberately does NOT render mileage, city/zona, vehicle category,
-// "especificaciones técnicas" (motor/potencia/torque/etc.), "miembro desde",
-// or a "tasa de respuesta" -- none of those exist anywhere in this schema
-// (vehicle_snapshots, vehicle_snapshots_public, tenants). Every field on
-// this page traces back to a real column or a real computed value.
+// Deliberately does NOT render mileage, city/zona, vehicle category, or
+// "especificaciones técnicas" (motor/potencia/torque/etc.) -- none of those
+// exist anywhere in this schema (vehicle_snapshots, vehicle_snapshots_public,
+// tenants). "Miembro desde" (tenant_member_since, 0012 migration) and "tasa
+// de respuesta" (derived from reputation_events) ARE real and rendered below.
+// Every field on this page traces back to a real column or a real computed
+// value.
 export const Route = createFileRoute("/catalogo_/$vehicleId")({
   component: VehicleDetailPage,
 });
@@ -37,6 +39,28 @@ const CURRENCY_FORMATTER = new Intl.NumberFormat("es-CO", {
 function formatPrice(value: number | null): string {
   return value === null ? "Sin definir" : CURRENCY_FORMATTER.format(value);
 }
+
+// Motor/potencia/torque/puertas/pasajeros/color/transmisión/tracción/estado
+// VIN: none of these exist anywhere in this schema (vehicle_snapshots has no
+// such columns, and V2 doesn't sync them today). This grid exists so the
+// page's layout reads as complete, but every value says so honestly instead
+// of asserting a fabricated spec next to a "Verificado" vehicle -- a real
+// number here would be indistinguishable from a real synced one, and this
+// app is already being used as if production-ready. Swap PENDING_SYNC_LABEL
+// for the real value, per field, once/if V2 actually starts sending it --
+// the layout below doesn't need to change to do that.
+const PENDING_SYNC_LABEL = "Por sincronizar";
+const TECHNICAL_SPEC_LABELS = [
+  "Motor",
+  "Potencia",
+  "Torque",
+  "Puertas",
+  "Pasajeros",
+  "Color",
+  "Transmisión",
+  "Tracción",
+  "Estado VIN",
+] as const;
 
 /** `available` / `sold` / whatever V2 sends -- free text (no check constraint on this column, 0001_core_schema.sql), so this only reformats it, never maps to a fabricated label set. */
 function formatStatus(status: string): string {
@@ -95,9 +119,9 @@ function PhotoGallery({ photos, isLoading, altLabel }: PhotoGalleryProps) {
     return (
       <div
         data-testid="vehicle-photo-placeholder"
-        className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-border bg-tint text-center sm:h-80 lg:h-[420px]"
+        className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-border bg-tint text-center shadow-sm sm:h-80 lg:h-[420px]"
       >
-        <span aria-hidden="true" className="text-3xl">
+        <span aria-hidden="true" className="text-5xl">
           🚗
         </span>
         <p className="text-sm text-muted">Todavía no hay fotos cargadas para este vehículo.</p>
@@ -109,7 +133,7 @@ function PhotoGallery({ photos, isLoading, altLabel }: PhotoGalleryProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-xl border border-border bg-white">
+      <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
         <img
           data-testid="vehicle-photo-main"
           src={selected?.url}
@@ -125,7 +149,7 @@ function PhotoGallery({ photos, isLoading, altLabel }: PhotoGalleryProps) {
               type="button"
               data-testid="vehicle-photo-thumbnail"
               onClick={() => setSelectedIndex(index)}
-              className={`shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+              className={`shrink-0 overflow-hidden rounded-lg border-2 shadow-sm transition-colors ${
                 index === selectedIndex ? "border-primary" : "border-transparent"
               }`}
             >
@@ -147,20 +171,34 @@ interface IdentityCardProps {
  * tenantName/contactPhone at connected/owner tier, an honest masking
  * explanation otherwise. Real reputation via useReputationScore(tenantId),
  * shown the same 0-5 scale routes/index.tsx's ReputationStatCard already
- * established -- no "miembro desde", no fabricated response rate.
+ * established. Also shows "miembro desde" (tenant_member_since, 0012
+ * migration) and "tasa de respuesta" (derived from reputation_events) --
+ * both real, both gated behind the exact same reveal conditions as the rest
+ * of this card (identityRevealed for member-since, "has events yet" for
+ * response rate), never fabricated when the underlying value is null.
  */
 function IdentityCard({ vehicle }: IdentityCardProps) {
   const reputation = useReputationScore(vehicle.tenantId);
   const identityRevealed = vehicle.tenantName !== null;
+  const memberSinceYear =
+    identityRevealed && vehicle.tenantMemberSince
+      ? new Date(vehicle.tenantMemberSince).getFullYear()
+      : null;
 
   return (
     <div
       data-testid="vehicle-identity-card"
-      className="flex flex-col gap-2 border-t border-border pt-4"
+      className="flex flex-col gap-3 rounded-xl border border-border bg-tint p-5"
     >
-      <h3 className="font-head text-sm font-semibold text-dark">Aliado</h3>
+      <div className="flex items-center gap-2">
+        <span aria-hidden="true" className="text-lg">
+          {identityRevealed ? "🤝" : "🔒"}
+        </span>
+        <h3 className="font-head text-sm font-semibold text-dark">Aliado</h3>
+      </div>
+
       {identityRevealed ? (
-        <>
+        <div className="flex flex-col gap-1">
           <p data-testid="vehicle-identity-name" className="text-sm font-semibold text-dark">
             {vehicle.tenantName}
           </p>
@@ -169,24 +207,71 @@ function IdentityCard({ vehicle }: IdentityCardProps) {
               {vehicle.contactPhone}
             </p>
           ) : null}
-        </>
+          {memberSinceYear !== null ? (
+            <p data-testid="vehicle-identity-member-since" className="text-xs text-muted">
+              Miembro desde {memberSinceYear}
+            </p>
+          ) : null}
+        </div>
       ) : (
         <p data-testid="vehicle-identity-masked" className="text-sm text-muted">
           Identidad oculta hasta aceptar conexión.
         </p>
       )}
 
-      {reputation.isLoading ? null : reputation.score === null ? (
-        <p data-testid="vehicle-identity-reputation-unrated" className="text-xs text-muted">
-          Sin calificar todavía
-        </p>
-      ) : (
-        <p data-testid="vehicle-identity-reputation" className="text-xs text-muted">
-          Reputación: {(reputation.score / 20).toFixed(1)} / 5 ({reputation.sampleSize}{" "}
-          {reputation.sampleSize === 1 ? "operación" : "operaciones"})
-        </p>
+      {reputation.isLoading ? null : (
+        <div className="flex flex-col gap-0.5 border-t border-border-2 pt-2">
+          {reputation.score === null ? (
+            <p data-testid="vehicle-identity-reputation-unrated" className="text-xs text-muted">
+              Sin calificar todavía
+            </p>
+          ) : (
+            <p data-testid="vehicle-identity-reputation" className="text-xs text-muted">
+              Reputación: {(reputation.score / 20).toFixed(1)} / 5 ({reputation.sampleSize}{" "}
+              {reputation.sampleSize === 1 ? "operación" : "operaciones"})
+            </p>
+          )}
+          {reputation.responseRate !== null ? (
+            <p data-testid="vehicle-identity-response-rate" className="text-xs text-muted">
+              {reputation.responseRate}% de respuesta
+            </p>
+          ) : null}
+        </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Structural placeholder -- see TECHNICAL_SPEC_LABELS' own comment above for
+ * why every value is honestly labeled "Por sincronizar" instead of a
+ * fabricated number. Renders the same 3-column grid shape a real spec block
+ * would use, so swapping in real values later (if V2 ever syncs them) is a
+ * content change, not a layout change.
+ */
+function TechnicalSpecsSection() {
+  return (
+    <section
+      data-testid="vehicle-technical-specs"
+      className="rounded-xl border border-border bg-white p-6 shadow-sm lg:p-8"
+    >
+      <h2 className="font-head text-lg font-semibold text-dark">Especificaciones técnicas</h2>
+      <p className="mt-1 text-xs text-muted">
+        Avaluauto todavía no sincroniza estos datos para este vehículo.
+      </p>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {TECHNICAL_SPEC_LABELS.map((label) => (
+          <div
+            key={label}
+            data-testid="vehicle-technical-spec-item"
+            className="rounded-lg border border-border-2 bg-bg p-4"
+          >
+            <p className="text-xs text-muted">{label}</p>
+            <p className="mt-1 text-sm font-semibold text-faint">{PENDING_SYNC_LABEL}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -351,38 +436,37 @@ export function VehicleDetailPage() {
 
             <div
               data-testid="vehicle-detail-info-card"
-              className="flex flex-col gap-4 rounded-xl border border-border bg-white p-6 shadow-sm"
+              className="flex flex-col gap-6 rounded-xl border border-border bg-white p-6 shadow-md lg:p-8"
             >
-              <div>
-                <h1 className="font-head text-2xl font-bold text-dark">
-                  {vehicle.make} {vehicle.model}
-                </h1>
-                <p className="text-sm text-muted">{vehicle.year ?? "Año sin definir"}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <span
-                    data-testid="vehicle-detail-price"
-                    className="font-head text-2xl font-bold text-dark"
-                  >
-                    {formatPrice(vehicle.allyPrice)}
-                  </span>
-                  <span className="text-xs text-faint">Precio aliados</span>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h1 className="font-head text-2xl font-bold text-dark">
+                    {vehicle.make} {vehicle.model}
+                  </h1>
+                  <p className="text-sm text-muted">{vehicle.year ?? "Año sin definir"}</p>
                 </div>
                 <span
                   data-testid="vehicle-detail-status"
-                  className="rounded-full bg-tint px-3 py-1 text-xs font-semibold text-primary"
+                  className="shrink-0 rounded-full bg-tint px-3 py-1 text-xs font-semibold text-primary"
                 >
                   {formatStatus(vehicle.status)}
                 </span>
               </div>
 
-              {vehicle.minPrice !== null ? (
-                <p data-testid="vehicle-detail-min-price" className="text-sm text-muted">
-                  Precio mínimo: {formatPrice(vehicle.minPrice)}
-                </p>
-              ) : null}
+              <div className="flex flex-col gap-1 rounded-lg bg-tint p-4">
+                <span className="text-xs font-medium text-muted">Precio aliados</span>
+                <span
+                  data-testid="vehicle-detail-price"
+                  className="font-head text-3xl font-bold text-dark"
+                >
+                  {formatPrice(vehicle.allyPrice)}
+                </span>
+                {vehicle.minPrice !== null ? (
+                  <p data-testid="vehicle-detail-min-price" className="text-sm text-muted">
+                    Precio mínimo: {formatPrice(vehicle.minPrice)}
+                  </p>
+                ) : null}
+              </div>
 
               <p data-testid="vehicle-detail-views" className="text-xs text-muted">
                 {vehicle.viewsCount} {vehicle.viewsCount === 1 ? "vista" : "vistas"}
@@ -398,6 +482,8 @@ export function VehicleDetailPage() {
             </div>
           </div>
         )}
+
+        {vehicle ? <TechnicalSpecsSection /> : null}
       </main>
     </div>
   );

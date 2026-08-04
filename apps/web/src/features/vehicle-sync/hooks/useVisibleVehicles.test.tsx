@@ -31,7 +31,15 @@ describe("useVisibleVehicles", () => {
     useSessionClaims.mockReturnValue({
       data: { status: "authenticated", claims: { tenantId: "t1" } },
     });
-    const vehicles = [{ id: "v1", tenantId: "t1", make: "Toyota", model: "Corolla" }];
+    const vehicles = [
+      {
+        id: "v1",
+        tenantId: "t1",
+        make: "Toyota",
+        model: "Corolla",
+        tenantMemberSince: "2020-01-01T00:00:00Z",
+      },
+    ];
     fetchVisibleVehicles.mockResolvedValue(vehicles);
 
     const { result } = renderHook(() => useVisibleVehicles(), { wrapper });

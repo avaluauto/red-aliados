@@ -41,6 +41,7 @@ describe("useReputationScore", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.score).toBeNull();
     expect(result.current.sampleSize).toBe(0);
+    expect(result.current.responseRate).toBeNull();
   });
 
   it("does not query at all when there is no tenant id yet", () => {
@@ -57,5 +58,32 @@ describe("useReputationScore", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.score).toBeNull();
     expect(result.current.sampleSize).toBe(0);
+    expect(result.current.responseRate).toBeNull();
+  });
+
+  it("computes responseRate as the share of terminal events that were NOT expired", async () => {
+    fetchReputationEvents.mockResolvedValue([
+      { eventType: "accepted", responseTimeSeconds: 0 },
+      { eventType: "rejected", responseTimeSeconds: 0 },
+      { eventType: "expired", responseTimeSeconds: 0 },
+      { eventType: "expired", responseTimeSeconds: 0 },
+    ]);
+
+    const { result } = renderHook(() => useReputationScore(TENANT_ID), { wrapper });
+
+    // 2 of 4 terminal events were answered (accepted/rejected) rather than
+    // expired -- 50%.
+    await waitFor(() => expect(result.current.responseRate).toBe(50));
+  });
+
+  it("resolves responseRate to 100 when every terminal event was answered (none expired)", async () => {
+    fetchReputationEvents.mockResolvedValue([
+      { eventType: "accepted", responseTimeSeconds: 0 },
+      { eventType: "rejected", responseTimeSeconds: 0 },
+    ]);
+
+    const { result } = renderHook(() => useReputationScore(TENANT_ID), { wrapper });
+
+    await waitFor(() => expect(result.current.responseRate).toBe(100));
   });
 });
