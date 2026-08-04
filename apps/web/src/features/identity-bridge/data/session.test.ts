@@ -25,7 +25,7 @@ describe("fetchSessionResult", () => {
 
   it("returns authenticated with the raw claims when getClaims succeeds", async () => {
     getClaims.mockResolvedValue({
-      data: { claims: { tenant_id: "t-1", role: "dealer_admin", red_aliados_enabled: true } },
+      data: { claims: { tenant_id: "t-1", app_role: "dealer_admin", red_aliados_enabled: true } },
       error: null,
     });
 
@@ -34,7 +34,7 @@ describe("fetchSessionResult", () => {
 
     expect(result).toEqual({
       status: "authenticated",
-      rawClaims: { tenant_id: "t-1", role: "dealer_admin", red_aliados_enabled: true },
+      rawClaims: { tenant_id: "t-1", app_role: "dealer_admin", red_aliados_enabled: true },
     });
   });
 
@@ -58,7 +58,7 @@ describe("fetchSessionResult", () => {
 
   it("never writes anything -- it only ever reads from the Supabase client", async () => {
     getClaims.mockResolvedValue({
-      data: { claims: { tenant_id: "t-1", role: "dealer_admin", red_aliados_enabled: true } },
+      data: { claims: { tenant_id: "t-1", app_role: "dealer_admin", red_aliados_enabled: true } },
       error: null,
     });
 

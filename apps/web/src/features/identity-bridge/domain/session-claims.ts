@@ -35,15 +35,18 @@ function isNonEmptyString(value: unknown): value is string {
  * false/absent as a valid, renderable state (the disabled gate), not an
  * error.
  *
- * KNOWN RISK (flagged, not silently resolved): Supabase's own JWT contract
- * reserves a top-level `role` claim for PostgREST role switching (always
- * `"authenticated"` for a signed-in user — see @supabase/auth-js
- * `RequiredClaims`). spec.md's "Claim Contract" requirement names the
- * app-level dealer role claim `role` too. If V2 emits its custom role under
- * the same top-level `role` key, this collides with Postgres's own role
- * claim. This function reads whatever value is under `role` literally, per
- * spec — see the apply-progress/report Risks section for the follow-up
- * decision needed with V2 (e.g. a distinct claim key).
+ * RESOLVED RISK (was flagged as open in an earlier revision): Supabase's own
+ * JWT contract reserves a top-level `role` claim for PostgREST role
+ * switching (always `"authenticated"` for a signed-in user — see
+ * @supabase/auth-js `RequiredClaims`). Reading the app-level dealer role from
+ * that same key would collide with Postgres's own role claim -- confirmed
+ * concretely while wiring a Custom Access Token Hook for local testing
+ * (supabase/LOCAL_TESTING.md): setting `role` to anything other than
+ * `authenticated` breaks PostgREST's `SET ROLE`, which silently defeats every
+ * `to authenticated` RLS policy in this project. The app-level dealer role
+ * is read from the distinct `app_role` claim instead, per this file's
+ * original Risks note. V2 must be asked to emit `app_role` (not `role`) when
+ * that integration is actually wired (supabase/THIRD_PARTY_AUTH.md).
  */
 export function parseSessionClaims(raw: unknown): SessionClaimsResult {
   if (typeof raw !== "object" || raw === null) {
@@ -57,9 +60,9 @@ export function parseSessionClaims(raw: unknown): SessionClaimsResult {
     return { valid: false, reason: "tenant_id claim is missing or not a UUID" };
   }
 
-  const role = bag.role;
+  const role = bag.app_role;
   if (!isNonEmptyString(role)) {
-    return { valid: false, reason: "role claim is missing or empty" };
+    return { valid: false, reason: "app_role claim is missing or empty" };
   }
 
   const redAliadosEnabled = bag.red_aliados_enabled === true;

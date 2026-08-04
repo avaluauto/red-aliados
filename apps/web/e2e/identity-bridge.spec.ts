@@ -11,7 +11,7 @@ const ENABLED_TENANT_SESSION = {
   status: "authenticated" as const,
   rawClaims: {
     tenant_id: "11111111-1111-4111-8111-111111111111",
-    role: "dealer_admin",
+    app_role: "dealer_admin",
     red_aliados_enabled: true,
   },
 };
@@ -20,7 +20,7 @@ const DISABLED_TENANT_SESSION = {
   status: "authenticated" as const,
   rawClaims: {
     tenant_id: "22222222-2222-4222-8222-222222222222",
-    role: "dealer_admin",
+    app_role: "dealer_admin",
     red_aliados_enabled: false,
   },
 };

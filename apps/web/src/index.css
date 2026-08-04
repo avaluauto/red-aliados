@@ -1,1 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+
+/* Design tokens extracted from the reference prototype
+   (https://red-aliados.vercel.app/index.html), registered as Tailwind v4
+   theme tokens so they're usable as bg-primary, text-dark, font-head, etc. */
+@theme {
+  --color-primary: #1f7a9c;
+  --color-brand: #6fb9d4;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-warning-ink: #b45309;
+  --color-dark: #2a3340;
+  --color-body: #555a64;
+  --color-muted: #8b9099;
+  --color-faint: #9aa3ad;
+  --color-bg: #f7f9fc;
+  --color-tint: #f1f8fb;
+  --color-border: #eef1f5;
+  --color-border-2: #dfe4ea;
+
+  --font-head: "Comfortaa", system-ui, sans-serif;
+  --font-body: "Poppins", system-ui, sans-serif;
+
+  --shadow-sm: 0 1px 3px rgba(42, 51, 64, 0.08);
+  --shadow-md: 0 8px 24px rgba(42, 51, 64, 0.1);
+  --shadow-lg: 0 20px 50px rgba(42, 51, 64, 0.16);
+}
+
+:root {
+  --brand-grad: linear-gradient(135deg, #6fb9d4, #1f7a9c);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-body);
+  background-color: var(--color-bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-head);
+  color: var(--color-dark);
+}

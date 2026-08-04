@@ -1,6 +1,10 @@
 // Container: wires the identity-bridge hook + domain rule to the app shell.
-// No branch here ever renders a registration/login form -- V2 is the only
-// place a session is created (spec: Federated JWT Trust).
+// No branch here ever renders a self-registration form -- V2 remains the
+// only place a REAL session is created (spec: Federated JWT Trust). The
+// session-unavailable branch does render a sign-in FORM (see
+// SessionUnavailableState.tsx -> SignInForm.tsx), but that's a documented
+// test-only stand-in against Red Aliados' own Supabase project, not
+// self-registration and not real Avaluauto V2 identity verification.
 import type { ReactNode } from "react";
 import { isModuleEnabled } from "../domain/session-claims";
 import { useSessionClaims } from "../hooks/useSessionClaims";

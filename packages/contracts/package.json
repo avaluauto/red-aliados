@@ -11,12 +11,15 @@
     "./zod": "./src/zod/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest"
   },
   "dependencies": {
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
   }
 }

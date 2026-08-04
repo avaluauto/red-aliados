@@ -10,33 +10,206 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
+import { Route as E2eConnectionMessagingRouteImport } from './routes/e2e-connection-messaging'
+import { Route as E2eNetworkConnectionsRouteImport } from './routes/e2e-network-connections'
+import { Route as E2eNetworkGuardRouteImport } from './routes/e2e-network-guard'
+import { Route as E2ePartnerReputationRouteImport } from './routes/e2e-partner-reputation'
+import { Route as E2eTargetedSearchRouteImport } from './routes/e2e-targeted-search'
+import { Route as E2eTenantDirectoryRouteImport } from './routes/e2e-tenant-directory'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MensajesRouteImport } from './routes/mensajes'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as RedRouteImport } from './routes/red'
+import { Route as SolicitudesRouteImport } from './routes/solicitudes'
+import { Route as CatalogoVehicleIdRouteImport } from './routes/catalogo_.$vehicleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eConnectionMessagingRoute = E2eConnectionMessagingRouteImport.update({
+  id: '/e2e-connection-messaging',
+  path: '/e2e-connection-messaging',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eNetworkConnectionsRoute = E2eNetworkConnectionsRouteImport.update({
+  id: '/e2e-network-connections',
+  path: '/e2e-network-connections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eNetworkGuardRoute = E2eNetworkGuardRouteImport.update({
+  id: '/e2e-network-guard',
+  path: '/e2e-network-guard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2ePartnerReputationRoute = E2ePartnerReputationRouteImport.update({
+  id: '/e2e-partner-reputation',
+  path: '/e2e-partner-reputation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eTargetedSearchRoute = E2eTargetedSearchRouteImport.update({
+  id: '/e2e-targeted-search',
+  path: '/e2e-targeted-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const E2eTenantDirectoryRoute = E2eTenantDirectoryRouteImport.update({
+  id: '/e2e-tenant-directory',
+  path: '/e2e-tenant-directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MensajesRoute = MensajesRouteImport.update({
+  id: '/mensajes',
+  path: '/mensajes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RedRoute = RedRouteImport.update({
+  id: '/red',
+  path: '/red',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolicitudesRoute = SolicitudesRouteImport.update({
+  id: '/solicitudes',
+  path: '/solicitudes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoVehicleIdRoute = CatalogoVehicleIdRouteImport.update({
+  id: '/catalogo_/$vehicleId',
+  path: '/catalogo/$vehicleId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
+  '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
+  '/e2e-targeted-search': typeof E2eTargetedSearchRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
+  '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
+  '/red': typeof RedRoute
+  '/solicitudes': typeof SolicitudesRoute
+  '/catalogo/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
+  '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
+  '/e2e-targeted-search': typeof E2eTargetedSearchRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
+  '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
+  '/red': typeof RedRoute
+  '/solicitudes': typeof SolicitudesRoute
+  '/catalogo/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/e2e-connection-messaging': typeof E2eConnectionMessagingRoute
+  '/e2e-network-connections': typeof E2eNetworkConnectionsRoute
+  '/e2e-network-guard': typeof E2eNetworkGuardRoute
+  '/e2e-partner-reputation': typeof E2ePartnerReputationRoute
+  '/e2e-targeted-search': typeof E2eTargetedSearchRoute
+  '/e2e-tenant-directory': typeof E2eTenantDirectoryRoute
+  '/login': typeof LoginRoute
+  '/mensajes': typeof MensajesRoute
+  '/perfil': typeof PerfilRoute
+  '/red': typeof RedRoute
+  '/solicitudes': typeof SolicitudesRoute
+  '/catalogo_/$vehicleId': typeof CatalogoVehicleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/catalogo'
+    | '/e2e-connection-messaging'
+    | '/e2e-network-connections'
+    | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
+    | '/e2e-targeted-search'
+    | '/e2e-tenant-directory'
+    | '/login'
+    | '/mensajes'
+    | '/perfil'
+    | '/red'
+    | '/solicitudes'
+    | '/catalogo/$vehicleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/catalogo'
+    | '/e2e-connection-messaging'
+    | '/e2e-network-connections'
+    | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
+    | '/e2e-targeted-search'
+    | '/e2e-tenant-directory'
+    | '/login'
+    | '/mensajes'
+    | '/perfil'
+    | '/red'
+    | '/solicitudes'
+    | '/catalogo/$vehicleId'
+  id:
+    | '__root__'
+    | '/'
+    | '/catalogo'
+    | '/e2e-connection-messaging'
+    | '/e2e-network-connections'
+    | '/e2e-network-guard'
+    | '/e2e-partner-reputation'
+    | '/e2e-targeted-search'
+    | '/e2e-tenant-directory'
+    | '/login'
+    | '/mensajes'
+    | '/perfil'
+    | '/red'
+    | '/solicitudes'
+    | '/catalogo_/$vehicleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogoRoute: typeof CatalogoRoute
+  E2eConnectionMessagingRoute: typeof E2eConnectionMessagingRoute
+  E2eNetworkConnectionsRoute: typeof E2eNetworkConnectionsRoute
+  E2eNetworkGuardRoute: typeof E2eNetworkGuardRoute
+  E2ePartnerReputationRoute: typeof E2ePartnerReputationRoute
+  E2eTargetedSearchRoute: typeof E2eTargetedSearchRoute
+  E2eTenantDirectoryRoute: typeof E2eTenantDirectoryRoute
+  LoginRoute: typeof LoginRoute
+  MensajesRoute: typeof MensajesRoute
+  PerfilRoute: typeof PerfilRoute
+  RedRoute: typeof RedRoute
+  SolicitudesRoute: typeof SolicitudesRoute
+  CatalogoVehicleIdRoute: typeof CatalogoVehicleIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +221,115 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-connection-messaging': {
+      id: '/e2e-connection-messaging'
+      path: '/e2e-connection-messaging'
+      fullPath: '/e2e-connection-messaging'
+      preLoaderRoute: typeof E2eConnectionMessagingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-network-connections': {
+      id: '/e2e-network-connections'
+      path: '/e2e-network-connections'
+      fullPath: '/e2e-network-connections'
+      preLoaderRoute: typeof E2eNetworkConnectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-network-guard': {
+      id: '/e2e-network-guard'
+      path: '/e2e-network-guard'
+      fullPath: '/e2e-network-guard'
+      preLoaderRoute: typeof E2eNetworkGuardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-partner-reputation': {
+      id: '/e2e-partner-reputation'
+      path: '/e2e-partner-reputation'
+      fullPath: '/e2e-partner-reputation'
+      preLoaderRoute: typeof E2ePartnerReputationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-targeted-search': {
+      id: '/e2e-targeted-search'
+      path: '/e2e-targeted-search'
+      fullPath: '/e2e-targeted-search'
+      preLoaderRoute: typeof E2eTargetedSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e2e-tenant-directory': {
+      id: '/e2e-tenant-directory'
+      path: '/e2e-tenant-directory'
+      fullPath: '/e2e-tenant-directory'
+      preLoaderRoute: typeof E2eTenantDirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mensajes': {
+      id: '/mensajes'
+      path: '/mensajes'
+      fullPath: '/mensajes'
+      preLoaderRoute: typeof MensajesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/red': {
+      id: '/red'
+      path: '/red'
+      fullPath: '/red'
+      preLoaderRoute: typeof RedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solicitudes': {
+      id: '/solicitudes'
+      path: '/solicitudes'
+      fullPath: '/solicitudes'
+      preLoaderRoute: typeof SolicitudesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo_/$vehicleId': {
+      id: '/catalogo_/$vehicleId'
+      path: '/catalogo/$vehicleId'
+      fullPath: '/catalogo/$vehicleId'
+      preLoaderRoute: typeof CatalogoVehicleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogoRoute: CatalogoRoute,
+  E2eConnectionMessagingRoute: E2eConnectionMessagingRoute,
+  E2eNetworkConnectionsRoute: E2eNetworkConnectionsRoute,
+  E2eNetworkGuardRoute: E2eNetworkGuardRoute,
+  E2ePartnerReputationRoute: E2ePartnerReputationRoute,
+  E2eTargetedSearchRoute: E2eTargetedSearchRoute,
+  E2eTenantDirectoryRoute: E2eTenantDirectoryRoute,
+  LoginRoute: LoginRoute,
+  MensajesRoute: MensajesRoute,
+  PerfilRoute: PerfilRoute,
+  RedRoute: RedRoute,
+  SolicitudesRoute: SolicitudesRoute,
+  CatalogoVehicleIdRoute: CatalogoVehicleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

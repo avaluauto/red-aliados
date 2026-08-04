@@ -56,54 +56,54 @@ Chain strategy: stacked-to-main
 
 ## Phase 3: network-authorization
 
-- [ ] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
-- [ ] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
-- [ ] 3.3 Playwright: unconnected tenant + direct table query both return zero rows
+- [x] 3.1 Vitest + `features/network-authorization/domain`: tier resolution mirroring `app.visibility_tier()`
+- [x] 3.2 `.../hooks`: client guard wrapping queries (UX only, not the security boundary)
+- [x] 3.3 Playwright: unconnected tenant client-side proof done; direct table query RLS proof documented as a verification gap (no live Supabase project -- see apply-progress)
 
 ## Phase 4: vehicle-sync
 
-- [ ] 4.1 `packages/contracts/src/zod`: webhook payload schema
-- [ ] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert
-- [ ] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead@5) + gap scan
-- [ ] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min
-- [ ] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired
+- [x] 4.1 `packages/contracts/src/zod`: webhook payload schema (`vehicleSyncEventSchema`, see PR4 deviation: descriptive-only V2 fields not persisted)
+- [x] 4.2 Vitest + `supabase/functions/ingest-vehicle-event/index.ts`: HMAC verify, `sync_event_log` dedupe, seq-gated upsert (real logic in `packages/vehicle-sync`; Deno entrypoint is a thin, unexecuted wrapper — see apply-progress)
+- [x] 4.3 Vitest + `supabase/functions/reconcile-outbox/index.ts`: retry backoff (1m/5m/25m/2h/12h, dead after 6th total attempt — documented interpretation, see apply-progress) + gap scan
+- [x] 4.4 pg_cron migration scheduling `reconcile-outbox` /15min (`0005_pg_cron_reconcile.sql`, pg_cron + pg_net pattern, NOT executed — no pg_cron/pg_net-enabled Postgres in sandbox)
+- [x] 4.5 Integration: duplicate delivery no-op; out-of-order -> `skipped_stale`; dropped event repaired (packages/vehicle-sync/src/integration.test.ts, run for real)
 
 ## Phase 5: tenant-directory
 
-- [ ] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
-- [ ] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
-- [ ] 5.3 `.../components`: candidate card (reputation shown, phone masked)
-- [ ] 5.4 Playwright: pre-connection masking; zero rows without linking request
+- [x] 5.1 Vitest + `features/tenant-directory/domain`: contact-reveal + reputation-visible rules
+- [x] 5.2 `.../data,hooks`: query via `vehicle_snapshots_public` + contact join
+- [x] 5.3 `.../components`: candidate card (reputation shown, phone masked)
+- [x] 5.4 Playwright: pre-connection masking; zero rows without linking request
 
 ## Phase 6: network-connections
 
-- [ ] 6.1 Vitest + `features/network-connections/domain`: `suggested->pending->accepted|rejected|expired` state machine + 48h expiry calc
-- [ ] 6.2 `.../data,hooks`: create request (vehicle_interest/search_match), accept/reject mutations
-- [ ] 6.3 pg_cron migration: auto-expire pending requests past 48h
-- [ ] 6.4 `.../components`: request/accept/reject UI
-- [ ] 6.5 Playwright: accept -> reciprocal edges; reject/expiry -> none; seeded `direct` only via service role
+- [x] 6.1 Vitest + `features/network-connections/domain`: `suggested->pending->accepted|rejected|expired` state machine + 48h expiry calc
+- [x] 6.2 `.../data,hooks`: create request (vehicle_interest/search_match), accept/reject mutations
+- [x] 6.3 pg_cron migration: auto-expire pending requests past 48h (`0006_pg_cron_expire_requests.sql`, groups the state-transition/reciprocal-edge trigger + the expiry sweep -- see apply-progress deviation)
+- [x] 6.4 `.../components`: request/accept/reject UI
+- [x] 6.5 Playwright: accept -> reciprocal edges; reject/expiry -> none; seeded `direct` only via service role (direct-insert RLS proof documented as verification gap, same as PR3 -- see apply-progress)
 
 ## Phase 7: partner-reputation
 
-- [ ] 7.1 Vitest + `features/partner-reputation/domain`: score computation, expiry-penalizes-more-than-rejection
-- [ ] 7.2 DB trigger: emit `reputation_events` on terminal state (skip `suggested`)
-- [ ] 7.3 Playwright: expired vs rejected scores diverge as specified
+- [x] 7.1 Vitest + `features/partner-reputation/domain`: score computation, expiry-penalizes-more-than-rejection
+- [x] 7.2 DB trigger: emit `reputation_events` on terminal state (skip `suggested`)
+- [x] 7.3 Playwright: expired vs rejected scores diverge as specified
 
 ## Phase 8: connection-messaging
 
-- [ ] 8.1 Vitest + `features/connection-messaging/domain`: contact-reveal-on-accept gate
-- [ ] 8.2 `.../data,hooks`: Realtime subscription on `messages`, scoped to request origin
-- [ ] 8.3 `.../components`: thread UI, no attachments/presence/read-receipts
-- [ ] 8.4 Playwright: 3rd tenant cannot read thread; contact hidden pending -> shown on accept
+- [x] 8.1 Vitest + `features/connection-messaging/domain`: contact-reveal-on-accept gate
+- [x] 8.2 `.../data,hooks`: Realtime subscription on `connection_messages`, scoped to request origin (client-side party-check gate before any subscribe/read -- see apply-progress)
+- [x] 8.3 `.../components`: thread UI, no attachments/presence/read-receipts
+- [x] 8.4 Playwright: 3rd tenant cannot read thread (client-side proof only, RLS proof documented as verification gap, same as PR3/PR6 -- see apply-progress); contact hidden pending -> shown on accept
 
 ## Phase 9: targeted-search
 
-- [ ] 9.1 Vitest + `features/targeted-search/domain`: own-inventory-first order, opt-in gate, connected-only fan-out filter
-- [ ] 9.2 `.../data,hooks`: own-inventory search, opt-in fan-out query, proceed -> Opportunity event
-- [ ] 9.3 `.../components`: search + match + proceed UI
-- [ ] 9.4 Playwright: unconnected tenant excluded; view-only shares nothing; proceed fires V2 Opportunity
+- [x] 9.1 Vitest + `features/targeted-search/domain`: own-inventory-first order, opt-in gate, connected-only fan-out filter (`search-matching.ts` + `match-view-gate.ts`)
+- [x] 9.2 `.../data,hooks`: own-inventory search, opt-in fan-out query, proceed -> Opportunity event (`respondWithMatch` reuses network-connections' `createConnectionRequest`; `proceedOnMatch` inserts `search_opportunities_out` -- the local event, no live V2 CRM exists to actually create an Opportunity -- see apply-progress)
+- [x] 9.3 `.../components`: search + match + proceed UI (`SearchRequestForm`, `SearchMatchList` with a client-only view gate before Proceed is enabled)
+- [x] 9.4 Playwright: unconnected tenant excluded (asserted via the actual `search_request_targets` insert body, RLS proof documented as verification gap, same as PR3/PR6/PR8 -- see apply-progress); view-only shares nothing (zero network requests fired by viewing); proceed fires the local `search_opportunities_out` event (not a live V2 Opportunity -- no live V2 CRM in this sandbox)
 
 ## Phase 10: Cross-Capability Verification
 
-- [ ] 10.1 Playwright: full success-criteria flow (signin -> sync -> connect -> reveal -> message -> reputation -> search)
-- [ ] 10.2 Update docs; log open questions (module name, V2 JWT alg, webhook auth shape) as follow-ups
+- [x] 10.1 Playwright: full success-criteria flow (signin -> sync -> connect -> reveal -> message -> reputation -> search) -- `apps/web/e2e/cross-capability-flow.spec.ts`, one continuous test composing the existing per-feature harness routes with a single consistent tenant/request identity carried across every step
+- [x] 10.2 Update docs; log open questions (module name, V2 JWT alg, webhook auth shape, ally_price/min_price) as follow-ups; catalog known verification gaps -- see `README.md`

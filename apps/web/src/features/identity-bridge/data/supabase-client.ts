@@ -33,3 +33,13 @@ export const supabaseClient: SupabaseClient<Database> = createClient<Database>(
   supabaseUrl || PLACEHOLDER_URL,
   supabaseAnonKey || PLACEHOLDER_ANON_KEY,
 );
+
+// Dev-only console access for local testing (supabase/LOCAL_TESTING.md).
+// SignInForm.tsx now offers an in-app sign-in form for this same test-only
+// flow (a native Supabase test user, not a real V2-issued session); this
+// console escape hatch is kept alongside it for scripting/debugging
+// convenience. Never runs in a production build.
+if (import.meta.env.DEV) {
+  // biome-ignore lint/suspicious/noExplicitAny: dev-only console escape hatch
+  (window as any).supabaseClient = supabaseClient;
+}

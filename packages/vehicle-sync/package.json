@@ -1,0 +1,25 @@
+{
+  "name": "@red-aliados/vehicle-sync",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest"
+  },
+  "dependencies": {
+    "@red-aliados/contracts": "workspace:*",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.2",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

@@ -593,6 +593,7 @@ export type Database = {
           tenant_name: string | null;
           contact_phone: string | null;
           visibility_tier: "owner" | "connected" | "candidate" | "none";
+          tenant_member_since: string | null;
         };
         Relationships: [];
       };

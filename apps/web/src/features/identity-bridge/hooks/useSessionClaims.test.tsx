@@ -30,7 +30,11 @@ describe("useSessionClaims", () => {
   it("resolves to authenticated state with parsed claims for a valid session", async () => {
     fetchSessionResult.mockResolvedValue({
       status: "authenticated",
-      rawClaims: { tenant_id: VALID_TENANT_ID, role: "dealer_admin", red_aliados_enabled: true },
+      rawClaims: {
+        tenant_id: VALID_TENANT_ID,
+        app_role: "dealer_admin",
+        red_aliados_enabled: true,
+      },
     });
 
     const { useSessionClaims } = await import("./useSessionClaims");
@@ -58,7 +62,7 @@ describe("useSessionClaims", () => {
   it("treats a session whose claims fail validation as unauthenticated", async () => {
     fetchSessionResult.mockResolvedValue({
       status: "authenticated",
-      rawClaims: { role: "dealer_admin" }, // missing tenant_id
+      rawClaims: { app_role: "dealer_admin" }, // missing tenant_id
     });
 
     const { useSessionClaims } = await import("./useSessionClaims");

@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithRouter } from "../../../test/render-with-router";
 import type { SessionClaims } from "../domain/session-claims";
 import { IdentityGate } from "./IdentityGate";
 
@@ -53,20 +54,26 @@ describe("IdentityGate", () => {
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
   });
 
-  it("renders the session-unavailable state when unauthenticated, and hides children", () => {
+  it("renders the session-unavailable state when unauthenticated, and hides children", async () => {
     useSessionClaims.mockReturnValue({
       isPending: false,
       data: { status: "unauthenticated" },
     });
 
-    render(
+    // SessionUnavailableState now redirects to /login and renders a
+    // fallback <Link to="/login"> (see SessionUnavailableState.tsx), which
+    // needs a real router context -- plain `render` isn't enough here,
+    // unlike the other IdentityGate branches.
+    const { router } = await renderWithRouter(
       <IdentityGate>
         <div>Protected content</div>
       </IdentityGate>,
     );
 
-    expect(screen.getByRole("status")).toHaveTextContent(/no active/i);
+    expect(screen.getByRole("link", { name: /iniciar sesión/i })).toBeInTheDocument();
+    expect(screen.queryByText(/sesión activa/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+    await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
   });
 
   it("renders a loading state while pending, and hides children", () => {
